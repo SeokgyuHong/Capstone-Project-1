@@ -1,0 +1,6 @@
+evaluationDependsOn(':libraries')
+
+dependencies {
+    api project(':libraries:util')
+    api "androidx.annotation:annotation:1.1.0"
+}

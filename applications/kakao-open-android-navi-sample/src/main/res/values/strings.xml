@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Navi Sample</string>
+    <string name="title_activity_main">KakaoNavi SDK Sample</string>
+
+    <string name="button_run_kakaonavi">Run KakaoNavi</string>
+</resources>

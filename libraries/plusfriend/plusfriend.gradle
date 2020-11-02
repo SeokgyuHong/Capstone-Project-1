@@ -1,0 +1,6 @@
+evaluationDependsOn(':libraries')
+
+dependencies {
+    api project(':libraries:common')
+    implementation "androidx.browser:browser:1.0.0"
+}

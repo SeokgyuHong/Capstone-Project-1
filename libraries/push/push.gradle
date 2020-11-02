@@ -1,0 +1,13 @@
+evaluationDependsOn(':libraries')
+
+android {
+    defaultConfig {
+        missingDimensionStrategy 'adid', 'lite', 'full'
+    }
+}
+
+dependencies {
+    api project(':libraries:usermgmt')
+    implementation "com.google.firebase:firebase-messaging:19.0.1"
+    implementation "com.google.firebase:firebase-core:17.0.1"
+}

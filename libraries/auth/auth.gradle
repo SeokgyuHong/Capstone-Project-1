@@ -1,0 +1,6 @@
+evaluationDependsOn(':libraries')
+
+dependencies {
+    api project(':libraries:network')
+    api "androidx.fragment:fragment:1.0.0"
+}

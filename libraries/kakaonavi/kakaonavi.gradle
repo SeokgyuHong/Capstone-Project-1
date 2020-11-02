@@ -1,0 +1,6 @@
+evaluationDependsOn(':libraries')
+
+dependencies {
+    api project(':libraries:common')
+    implementation "androidx.appcompat:appcompat:1.0.2"
+}

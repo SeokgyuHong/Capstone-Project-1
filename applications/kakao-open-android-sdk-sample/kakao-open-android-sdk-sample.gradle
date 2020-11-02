@@ -1,0 +1,54 @@
+evaluationDependsOn(':applications')
+
+android {
+    defaultConfig {
+        missingDimensionStrategy 'adid', 'lite', 'full'
+    }
+
+    productFlavors {
+        dev {
+            resValue 'string', 'kakao_phase', 'dev'
+            resValue 'string', 'kakao_app_key', 'ec09748675bf7cc01d638d8c40a79c85'
+            resValue 'string', 'kakao_scheme', 'kakaoec09748675bf7cc01d638d8c40a79c85'
+        }
+
+        sandbox {
+            resValue 'string', 'kakao_phase', 'sandbox'
+            resValue 'string', 'kakao_app_key', 'cd9b86b063c3037851a4671c1712c01b'
+            resValue 'string', 'kakao_scheme', 'kakaocd9b86b063c3037851a4671c1712c01b'
+        }
+
+        cbt {
+            resValue 'string', 'kakao_phase', 'cbt'
+            resValue 'string', 'kakao_app_key', 'dd4e9cb75815cbdf7d87ed721a659baf'
+            resValue 'string', 'kakao_scheme', 'kakaodd4e9cb75815cbdf7d87ed721a659baf'
+        }
+
+        production {
+            resValue 'string', 'kakao_phase', 'production'
+            resValue 'string', 'kakao_app_key', 'dd4e9cb75815cbdf7d87ed721a659baf'
+            resValue 'string', 'kakao_scheme', 'kakaodd4e9cb75815cbdf7d87ed721a659baf'
+        }
+    }
+}
+
+dependencies {
+    implementation "androidx.legacy:legacy-support-v4:1.0.0"
+    implementation project(':libraries:kakaotalk')
+    implementation project(':libraries:kakaostory')
+    implementation project(':libraries:push')
+
+    implementation 'com.mcxiaoke.volley:library:1.0.19'
+    implementation "androidx.appcompat:appcompat:1.0.2"
+
+    /**
+     * Below dependencies should be in this gradle file even though they are already in
+     * applications.gradle because otherwise 'com.google.gms.google-services' plugin would not
+     * be able to detect firebase version and try to use default firebase version, which is likely
+     * to create a version conflict with the one used by push service.
+     */
+    implementation "com.google.firebase:firebase-messaging:19.0.1"
+    implementation "com.google.firebase:firebase-core:17.0.1"
+    implementation "com.google.android.gms:play-services-base:17.0.0"
+}
+apply plugin: 'com.google.gms.google-services'

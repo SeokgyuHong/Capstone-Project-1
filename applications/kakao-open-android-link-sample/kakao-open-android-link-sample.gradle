@@ -1,0 +1,34 @@
+evaluationDependsOn(':applications')
+android {
+    productFlavors {
+        dev {
+            resValue 'string', 'kakao_phase', 'dev'
+            resValue 'string', 'kakao_app_key', '000015680000000100000141d90efb2c'
+            resValue 'string', 'kakao_scheme', 'kakao000015680000000100000141d90efb2c'
+        }
+
+        sandbox {
+            resValue 'string', 'kakao_phase', 'sandbox'
+            resValue 'string', 'kakao_app_key', '45b44dbd68d2a691c0dc636babbc6a74'
+            resValue 'string', 'kakao_scheme', 'kakao45b44dbd68d2a691c0dc636babbc6a74'
+        }
+
+        cbt {
+            resValue 'string', 'kakao_phase', 'cbt'
+            resValue 'string', 'kakao_app_key', 'da4271119e69b289aace2bca05735d26'
+            resValue 'string', 'kakao_scheme', 'kakaoda4271119e69b289aace2bca05735d26'
+        }
+
+        production {
+            resValue 'string', 'kakao_phase', 'production'
+            resValue 'string', 'kakao_app_key', 'da4271119e69b289aace2bca05735d26'
+            resValue 'string', 'kakao_scheme', 'kakaoda4271119e69b289aace2bca05735d26'
+        }
+    }
+}
+dependencies {
+    implementation project(':libraries:kakaolink')
+    implementation project(':libraries:plusfriend')
+    implementation "androidx.appcompat:appcompat:1.0.2"
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+}

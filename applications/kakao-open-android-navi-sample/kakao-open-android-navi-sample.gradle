@@ -1,0 +1,32 @@
+evaluationDependsOn(':applications')
+
+android {
+    productFlavors {
+        dev {
+            resValue 'string', 'kakao_phase', 'dev'
+            resValue 'string', 'kakao_app_key', '12ff2b5742bf882a429125bb5d63caa8'
+        }
+
+        sandbox {
+            resValue 'string', 'kakao_phase', 'sandbox'
+            resValue 'string', 'kakao_app_key', 'dd4e9cb75815cbdf7d87ed721a659baf'
+        }
+
+        cbt {
+            resValue 'string', 'kakao_phase', 'cbt'
+            resValue 'string', 'kakao_app_key', 'c545d04ca2707e51d8c7eec7f507b340'
+        }
+
+        production {
+            resValue 'string', 'kakao_phase', 'production'
+            resValue 'string', 'kakao_app_key', 'c545d04ca2707e51d8c7eec7f507b340'
+        }
+    }
+}
+dependencies {
+    implementation project(':libraries:kakaonavi')
+
+    implementation "androidx.appcompat:appcompat:1.0.2"
+    implementation "com.google.android.material:material:1.0.0"
+    testImplementation 'junit:junit:4.12'
+}

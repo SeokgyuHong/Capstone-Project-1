@@ -53,12 +53,12 @@ module.exports.inst_req = (req,res)=>{
             }
         }).catch((err)=>{
             console.log(err)
-            res.send(err) 
+            res.send(err.code); //에러정보 전송 
         })
         conn.release(); //쿼리 객체 release
     }).catch((err)=>{
         console.log(err)
-        res.send(err)
+        res.send(err) //에러정보 전송
     })
  
 }
@@ -73,20 +73,20 @@ module.exports.inst_insert = (req,res)=>{
     let business_num = req.body.business_num; //사업자 번호
     if(!e_mail_check(rep_email))
     {
-        res.status(400).send({'key':1}) //이메일 에러
-        console.log("errorasdfasdf")
+        res.status(400).send({'key':1}) //이메일 양식 에러
+        
     }
     if(!phone_check(inst_phone))
     {
-        res.status(400).send({'key':2})//기관번호 에러
+        res.status(400).send({'key':2})//기관번호 양식 에러
     }
     if(!phone_check(rep_phone))
     {
-        res.status(400).send({'key':3})//대표자번호에러
+        res.status(400).send({'key':3})//대표자번호 양식 에러
     }
     if(!company_check(business_num))
     {
-        res.status(400).send({'key':4}) //사업자번호에러
+        res.status(400).send({'key':4}) //사업자번호 양식 에러
     }
     
     pool.getConnection().then((conn)=>{
@@ -106,32 +106,23 @@ module.exports.inst_insert = (req,res)=>{
 
     
 }
-
+//기관정보수정
 module.exports.inst_modify = (req,res)=>{
-    let id = req.body.id; //아이디
-    let inst_number = req.body.inst_number; //기관번호
+    let id = req.body.id; //매니저 아이디
     let name = req.body.name; //담당자이름
     let phone_number = req.body.phone_number; //휴대폰번호
     let e_mail = req.body.e_mail; //이메일정보
-    let pw = req.body.pw;
-    let company_number = req.body.company_number;
+    let pw = req.body.pw; //비밀번호
+
    //이메일 정규식
 
-   
-    let e_mail_flag = false;
-    let phone_flag = false;
-    let company_flag = false;
     if(!e_mail_check(e_mail))
     {
         console.log("이메일 양식 에러");
         res.status(400).send({'key':1}) //이메일양식에러
             
     }
-    if(!phone_check(inst_number)) 
-    {
-        console.log("번호 양식 에러");
-        res.status(400).send({'key':2}) //기관번호에러
-    }
+
     if(!phone_check(phone_number))
     {
         console.log("번호 양식 에러");
@@ -139,7 +130,7 @@ module.exports.inst_modify = (req,res)=>{
     }
 
         pool.getConnection().then((conn)=>{
-            conn.query(`update institution set inst_phone='${inst_number}',rep_name='${name}',rep_phone='${phone_number}',rep_email='${e_mail}',rep_password='${pw}' where institution_id=${id}`).then((data)=>{
+            conn.query(`update institution join manager on institution.rep_name=manager.nameset institution.rep_phone='${phone_number}', institution.rep_name='${name}', institution.rep_email='${e_mail}', institution.rep_password='${pw}}',manager.phone_number='${phone_number}', manager.name='${name}', manager.email='${e_mail}', manager.password='${pw}'where manager.manager_id = ${id};`).then((data)=>{
                 console.log(data);
                 res.status(200).send({'key':6}) //데이터 수정 성공
             }).catch((err)=>{
@@ -150,7 +141,7 @@ module.exports.inst_modify = (req,res)=>{
         }).catch((err)=>{
             console.log(err.code);
             res.status(400).send({'key':err.code}); //에러코드전송
-        })
+            })
 
     
     
@@ -161,7 +152,7 @@ module.exports.inst_delete = (req,res)=>{ //기관삭제
     let id = req.body.id; //기관 아이디
 
     pool.getConnection().then((conn)=>{
-        conn.query(`delete from institution where id = ${id}`).then((data)=>{
+        conn.query(`delete from institution where institution_id = ${id}`).then((data)=>{
             console.log(data);
             res.status(200).send({'key':7}) //데이터 삭제 성공
         }).catch((err)=>{
@@ -194,6 +185,7 @@ module.exports.rep_req = (req,res)=>{ //담당자 조회
         res.status(400).send({'key':err.code});
     })
 }
+
 module.exports.rep_insert = (req,res)=>{
     let manager_id = req.body.manager_id; //담당자 아이디
     let inst_id = req.body.inst_id; //기관 아이디
@@ -254,7 +246,7 @@ module.exports.rep_modify = (req,res)=>{
     }
 
         pool.getConnection().then((conn)=>{
-            conn.query(`update manager set name='${name}',phone_number='${phone_number}',email='${e_mail}',password='${password}' where manager_id=${manager_id}`).then((data)=>{
+            conn.query(`update manager set manager.name='${name}',manager.phone_number='${phone_number}',manager.email='${e_mail}',manager.password='${password}' where manager.id=${manager_id}`).then((data)=>{
                 console.log(data);
                 res.status(200).send({'key':9}) //데이터 수정 성공
             }).catch((err)=>{
@@ -272,10 +264,10 @@ module.exports.rep_modify = (req,res)=>{
 }
 
 module.exports.rep_delete = (req,res)=>{ //담당자 삭제
-    let manager_id = req.body.manager_id; //기관 아이디
+    let manager_id = req.body.manager_id; //담당자 아이디
 
     pool.getConnection().then((conn)=>{
-        conn.query(`delete from  where manager_id = ${manager_id}`).then((data)=>{
+        conn.query(`delete from manager where manager_id = ${manager_id}`).then((data)=>{
             console.log(data);
             res.status(200).send({'key':10}) //데이터 삭제 성공
         }).catch((err)=>{

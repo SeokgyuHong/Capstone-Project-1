@@ -1,6 +1,6 @@
 // 10월 28일 과제 
 const {pool} = require('./db_connect');
-function e_mail_check(e_mail){
+function e_mail_check(e_mail){ //이메일 정규식 체크 함수
     let e_mail_check = /^[0-9a-zA-z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;     
     if(!e_mail_check.test(e_mail))
     {
@@ -11,7 +11,7 @@ function e_mail_check(e_mail){
         return true;
     }
 }
-function phone_check(phone_number){
+function phone_check(phone_number){ //휴대폰 번호 및 일반전화 정규식 체크 함수
     let phone_number_check_1 = /^[0-9]{3}[-]+[0-9]{4}[-]+[0-9]{4}$/;     //휴대전화
     let phone_number_check_2 = /^\d{2,3}-\d{3,4}-\d{4}$/;  //일반전화 
     if(!phone_number_check_1.test(phone_number)&&!phone_number_check_2.test(phone_number)) //일반전화번호와 휴대폰번호 둘다 양식에서 어긋날경우
@@ -24,7 +24,7 @@ function phone_check(phone_number){
     }
 
 }
-function company_check(company_number){
+function company_check(company_number){ //사업자번호 정규식 체크 함수
     let company_number_check = /^\d{3}-\d{2}-\d{3}$/;
     if(!company_number_check.test(company_number))
     {
@@ -91,12 +91,16 @@ module.exports.inst_insert = (req,res)=>{
     
     pool.getConnection().then((conn)=>{
         conn.query(`insert into institution (institution_id,inst_name,inst_phone,activation,rep_name,rep_phone,rep_email,rep_password,business_num)values(${inst_id},'${inst_name}','${inst_phone}','N','${rep_name}','${rep_phone}','${rep_email}','${rep_password}','${business_num}')`).then((data)=>{
+            console.log(data);
+            res.status(200).send({'key':5}) //데이터 삽입 성공
         }).catch((err)=>{
             console.log(err);
+            res.status(400).send({'key':err.code}); //에러코드 전송
         })
         conn.release();
     }).catch((err)=>{
         console.log(err.code);
+        res.status(400).send({'key':err.code}); //에러코드 전송
     })
 
 
@@ -104,7 +108,8 @@ module.exports.inst_insert = (req,res)=>{
 }
 
 module.exports.inst_modify = (req,res)=>{
-    let person_id = req.body.id; //아이디
+    let id = req.body.id; //아이디
+    let inst_number = req.body.inst_number; //기관번호
     let name = req.body.name; //담당자이름
     let phone_number = req.body.phone_number; //휴대폰번호
     let e_mail = req.body.e_mail; //이메일정보
@@ -116,50 +121,171 @@ module.exports.inst_modify = (req,res)=>{
     let e_mail_flag = false;
     let phone_flag = false;
     let company_flag = false;
-    if(e_mail!=undefined)
+    if(!e_mail_check(e_mail))
     {
-        if(!e_mail_check.test(e_mail))
-        {
-            console.log("이메일 양식 에러");
-            res.status(400).send({'key':1}) //이메일양식에러
+        console.log("이메일 양식 에러");
+        res.status(400).send({'key':1}) //이메일양식에러
             
-        }
-    
-        else{
-            e_mail_flag=true;
-        }
     }
-    if(company_number!=undefined)
+    if(!phone_check(inst_number)) 
     {
-        if(!company_number_check.test(company_number))
-        {
-            console.log("사업자 번호 양식 에러");
-            res.status(400).send({'key':2}) //사업자 번호 양식 에러
-            
-        }
-        else{
-            company_flag=true;
-        }
+        console.log("번호 양식 에러");
+        res.status(400).send({'key':2}) //기관번호에러
     }
-    if(phone_number!=undefined)
+    if(!phone_check(phone_number))
     {
-        if(!phone_number_check_1.test(phone_number)&&!phone_number_check_2.test(phone_number)) //일반전화번호와 휴대폰번호 둘다 양식에서 어긋날경우
-        {
-            console.log("번호 양식 에러");
-            res.status(400).send({'key':3})
-        }
-        else{
-            phone_flag=true;
-        }
+        console.log("번호 양식 에러");
+        res.status(400).send({'key':3}) //담당자번호에러
     }
-    if(phone_flag==true && company_flag==true&&e_mail_flag==true)
-    {
+
         pool.getConnection().then((conn)=>{
-            conn.query()
+            conn.query(`update institution set inst_phone='${inst_number}',rep_name='${name}',rep_phone='${phone_number}',rep_email='${e_mail}',rep_password='${pw}' where institution_id=${id}`).then((data)=>{
+                console.log(data);
+                res.status(200).send({'key':6}) //데이터 수정 성공
+            }).catch((err)=>{
+                console.log(err.code);
+                res.status(400).send({'key':err.code}); //에러코드 전송
+            })
+            conn.release();
+        }).catch((err)=>{
+            console.log(err.code);
+            res.status(400).send({'key':err.code}); //에러코드전송
         })
-    }
+
     
     
 }
 
 
+module.exports.inst_delete = (req,res)=>{ //기관삭제
+    let id = req.body.id; //기관 아이디
+
+    pool.getConnection().then((conn)=>{
+        conn.query(`delete from institution where id = ${id}`).then((data)=>{
+            console.log(data);
+            res.status(200).send({'key':7}) //데이터 삭제 성공
+        }).catch((err)=>{
+            console.log(err.code);
+            res.status(400).send({'key':err.code}); //에러원인 전송
+        })
+        conn.release();
+    }).catch((err)=>{
+        console.log(err.code);
+        res.status(400).send({'key':err.code});
+    })
+
+}
+
+
+module.exports.rep_req = (req,res)=>{ //담당자 조회
+    let manager_id = req.body.manager_id; //담당자 id 
+    
+    pool.getConnection().then((conn)=>{
+        conn.query(`select * from manager where manager_id = ${manager_id}`).then((data)=>{
+            console.log(data[0]);
+            res.send(data[0]); //담당자 정보 전달
+        }).catch((err)=>{
+            console.log(err.code);
+            res.status(400).send({'key':err.code});
+        })
+        conn.release();
+    }).catch((err)=>{
+        console.log(err.code);
+        res.status(400).send({'key':err.code});
+    })
+}
+module.exports.rep_insert = (req,res)=>{
+    let manager_id = req.body.manager_id; //담당자 아이디
+    let inst_id = req.body.inst_id; //기관 아이디
+    let name = req.body.name; //담당자이름
+    let department = req.body.department; //담당자 부서
+    let working_status = req.body.working_status; //근무현황
+    let phone_number= req.body.phone_number; //휴대폰번호
+    let e_mail = req.body.e_mail; //이메일정보
+    let password = req.body.password; //비밀번호
+    let login_count = rqe.body.login_count; //로그인횟수
+
+    
+    if(!e_mail_check(e_mail))
+    {
+        console.log("이메일 양식 에러");
+        res.status(400).send({'key':1}) //이메일양식에러
+            
+    }
+    if(!phone_check(phone_number))
+    {
+        console.log("번호 양식 에러");
+        res.status(400).send({'key':3}) //담당자번호에러
+    }
+    
+    pool.getConnection().then((conn)=>{
+        conn.query(`insert into manager (manager_id,inst_id,name,department,working_status,phone_number,email,password,login_count) values (${manager_id},${inst_id},'${name}','${department}','${working_status}','${phone_number}','${e_mail}','${password}',${login_count})`).then((data)=>{
+            console.log(data)
+            res.status(200).send({'key':8}) //담당자 데이터 삽입 성공
+        }).catch((err)=>{
+            console.log(err.code);
+            res.status(400).send({'key':err.code});
+        })
+        conn.release();
+    }).catch((err)=>{
+        console.log(err.code);
+        res.status(400).send({'key':err.code});
+    })
+}
+
+module.exports.rep_modify = (req,res)=>{
+    let manager_id = req.body.manager_id; //담당자 아이디
+    let name = req.body.name; //담당자이름
+    let phone_number= req.body.phone_number; //휴대폰번호
+    let e_mail = req.body.e_mail; //이메일정보
+    let password = req.body.password; //비밀번호
+ 
+   
+    if(!e_mail_check(e_mail))
+    {
+        console.log("이메일 양식 에러");
+        res.status(400).send({'key':1}) //이메일양식에러
+            
+    }
+    if(!phone_check(phone_number))
+    {
+        console.log("번호 양식 에러");
+        res.status(400).send({'key':3}) //담당자번호에러
+    }
+
+        pool.getConnection().then((conn)=>{
+            conn.query(`update manager set name='${name}',phone_number='${phone_number}',email='${e_mail}',password='${password}' where manager_id=${manager_id}`).then((data)=>{
+                console.log(data);
+                res.status(200).send({'key':9}) //데이터 수정 성공
+            }).catch((err)=>{
+                console.log(err.code);
+                res.status(400).send({'key':err.code}); //에러코드 전송
+            })
+            conn.release();
+        }).catch((err)=>{
+            console.log(err.code);
+            res.status(400).send({'key':err.code}); //에러코드전송
+        })
+
+    
+    
+}
+
+module.exports.rep_delete = (req,res)=>{ //담당자 삭제
+    let manager_id = req.body.manager_id; //기관 아이디
+
+    pool.getConnection().then((conn)=>{
+        conn.query(`delete from  where manager_id = ${manager_id}`).then((data)=>{
+            console.log(data);
+            res.status(200).send({'key':10}) //데이터 삭제 성공
+        }).catch((err)=>{
+            console.log(err.code);
+            res.status(400).send({'key':err.code}); //에러원인 전송
+        })
+        conn.release();
+    }).catch((err)=>{
+        console.log(err.code);
+        res.status(400).send({'key':err.code});
+    })
+
+}

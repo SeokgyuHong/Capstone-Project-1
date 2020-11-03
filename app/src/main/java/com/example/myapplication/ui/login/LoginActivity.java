@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
@@ -18,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
@@ -154,16 +156,10 @@ public class LoginActivity extends AppCompatActivity  {
             System.out.println("login" + " : 토큰있음");
             Log.e("login", "카카오 토큰있음");
             // 사용자 동의 요청
-
-
         }else{
             // 무조건 재로그인을 시켜야 하는 경우 (리토 만료)
             System.out.println("login" + " : 토큰없음");
             Log.e("login", "카카오 토큰없음");
-
-
-
-
         }
 
         /*네이버 로그인 구현*/
@@ -205,7 +201,12 @@ public class LoginActivity extends AppCompatActivity  {
                         //responseBody = get(apiURL,requestHeaders);
                         responseBody = Naver_profile_ReadBody;
                         //System.out.println(responseBody);
-                       Log.e("Naver login", responseBody);
+                        Log.e("Naver login", responseBody);
+                        SharedPreferences pref = getSharedPreferences("login_type", Activity.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = pref.edit();
+                        editor.putString("type" , "naver");
+                        editor.commit();
+
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                         finish();
@@ -570,6 +571,12 @@ public class LoginActivity extends AppCompatActivity  {
                 Log.e("Login Activitiy", "Naver login 안되어있음.");
                 getAgree();
                 requestMe();
+
+                SharedPreferences pref = getSharedPreferences("login_type", Activity.MODE_PRIVATE);
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putString("type" , "kakao");
+                editor.commit();
+
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);//  성공하고 다음페이지로 넘어감
 

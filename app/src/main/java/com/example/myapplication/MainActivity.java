@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import com.example.myapplication.ui.login.LoginActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -85,6 +86,10 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
     private RecyclerView.LayoutManager layoutManager;
     private RecycleAdaptors recycleAdaptors;
 
+    private Home_fragment home_fragment;
+    private Sensor_fragment sensor_fragment;
+    private Mypage_fragment mypage_fragment;
+
     DrawerLayout drawer;
     Toolbar toolbar;
 
@@ -99,6 +104,36 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        home_fragment = new Home_fragment();
+        sensor_fragment = new Sensor_fragment();
+        mypage_fragment = new Mypage_fragment();
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.container , home_fragment).commit();
+
+        BottomNavigationView bottomNavigation = findViewById(R.id.bottom_navigation);
+        bottomNavigation.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                        switch (item.getItemId()){
+                            case R.id.tab1:
+                                //Toast.makeText(getApplicationContext(), "1", Toast.LENGTH_SHORT).show();
+                                getSupportFragmentManager().beginTransaction().replace(R.id.container, home_fragment).commit();
+                                return true;
+                            case R.id.tab2 :
+                                //Toast.makeText(getApplicationContext(), "2", Toast.LENGTH_SHORT).show();
+                                getSupportFragmentManager().beginTransaction().replace(R.id.container, sensor_fragment).commit();
+                                return true;
+                            case R.id.tab3 :
+                                //Toast.makeText(getApplicationContext(), "3", Toast.LENGTH_SHORT).show();
+                                getSupportFragmentManager().beginTransaction().replace(R.id.container, mypage_fragment).commit();
+                                return true;
+                        }
+                        return false;
+                    }
+                }
+        );
         Navinit(); // navigation drawer 초기화
         //getHashKey(); // fire base 해쉬 값 받아오기
 
@@ -114,68 +149,63 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
 
         });
 
-        //this.InitializeNotepadData();
-        recyclerView = (RecyclerView) findViewById(R.id.rv);
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-
-        recycleAdaptors = new RecycleAdaptors(notepadDataList);
-
-        recyclerView.setAdapter(recycleAdaptors);
-
-        SwipeHelper swipeHelper = new SwipeHelper(recycleAdaptors, this, recyclerView) {
-
-            @SuppressLint("UseCompatLoadingForDrawables")
-            @Override
-            public void instantiateUnderlayButton(RecyclerView.ViewHolder viewHolder, List<UnderlayButton> underlayButtons) {
-                underlayButtons.add(new SwipeHelper.UnderlayButton(
-                        "삭제",
-                        getResources().getDrawable(R.drawable.ic_delete_24px, null),
-                        R.drawable.ic_delete_24px,
-                        Color.parseColor("#FF3C30"),
-                        new SwipeHelper.UnderlayButtonClickListener() {
-                            @Override
-                            public void onClick(int pos) {
-                                // TODO: onDelete
-                            }
-                        }
-                )
-                );
-
-                wrtieToFile();
-
-            }
-
-        };
-
-       // ItemTouchHelper 생성
-        //helper = new ItemTouchHelper(new ItemTouchHelperCallback(recycleAdaptors, Title_filename, Content_filename ));
-        //RecyclerView에 ItemTouchHelper 붙이기
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeHelper);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
-
-        //swipeHelper.attachToRecyclerView(recyclerView);
-
-        MaterialButton button = (MaterialButton) findViewById(R.id.create_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (i >= 100) { // 수용가능한 메모 개소
-                    Toast.makeText(MainActivity.this, "메모는 최대 8개 입니다.", Toast.LENGTH_SHORT).show();
-                } else {
-                    Intent intent = new Intent(MainActivity.this, SubActivity.class);
-                    startActivity(intent);
-                }
-            }
-
-        });
+//        //this.InitializeNotepadData();
+//        recyclerView = (RecyclerView) findViewById(R.id.rv);
+//        layoutManager = new LinearLayoutManager(this);
+//        recyclerView.setLayoutManager(layoutManager);
+//
+//        recycleAdaptors = new RecycleAdaptors(notepadDataList);
+//
+//        recyclerView.setAdapter(recycleAdaptors);
+//
+//        SwipeHelper swipeHelper = new SwipeHelper(recycleAdaptors, this, recyclerView) {
+//
+//            @SuppressLint("UseCompatLoadingForDrawables")
+//            @Override
+//            public void instantiateUnderlayButton(RecyclerView.ViewHolder viewHolder, List<UnderlayButton> underlayButtons) {
+//                underlayButtons.add(new SwipeHelper.UnderlayButton(
+//                        "삭제",
+//                        getResources().getDrawable(R.drawable.ic_delete_24px, null),
+//                        R.drawable.ic_delete_24px,
+//                        Color.parseColor("#FF3C30"),
+//                        new SwipeHelper.UnderlayButtonClickListener() {
+//                            @Override
+//                            public void onClick(int pos) {
+//                                // TODO: onDelete
+//                            }
+//                        }
+//                )
+//                );
+//                wrtieToFile();
+//            }
+//
+//        };
+//
+//       // ItemTouchHelper 생성
+//        //helper = new ItemTouchHelper(new ItemTouchHelperCallback(recycleAdaptors, Title_filename, Content_filename ));
+//        //RecyclerView에 ItemTouchHelper 붙이기
+//
+//        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeHelper);
+//        itemTouchHelper.attachToRecyclerView(recyclerView);
+//
+//        //swipeHelper.attachToRecyclerView(recyclerView);
+//
+//        MaterialButton button = (MaterialButton) findViewById(R.id.create_button);
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (i >= 100) { // 수용가능한 메모 개소
+//                    Toast.makeText(MainActivity.this, "메모는 최대 8개 입니다.", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    Intent intent = new Intent(MainActivity.this, SubActivity.class);
+//                    startActivity(intent);
+//                }
+//            }
+//
+//        });
 
         // 뒤로가기 누르면 세션이 그대로 남아있음 리다이렉트 해야함
         //Recycle view 써서 swipe edit delete 만들기
-
-
-
 
     }
 

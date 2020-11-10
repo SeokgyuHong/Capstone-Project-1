@@ -183,7 +183,7 @@ module.exports.patient_info_modification= (req,res)=>{
     }
     
     pool.getConnection().then((conn)=>{
-        conn.query(`update sol_person set sol_name = '${name}', bid = ${dept_number},inst_id=${inst_id},birth='${date}',age=${age},sex='${sex}' where ${id}`).then((data)=>{
+        conn.query(`update sol_person set sol_name = '${name}', bid = ${dept_number},inst_id=${inst_id},birth='${date}',age=${age},sex='${sex}' where sol_id = ${id}`).then((data)=>{
             res.status(200).send({'key':8}) //정보 수정 성공
         }).catch((err)=>{
             console.log(err.code);

@@ -15,8 +15,8 @@ function phone_check(phone_number){ //휴대폰 번호 및 일반전화 정규�
 
 }
 
-function sex_check(sex){
-    if(sex !='M' && sex!='F')
+function sex_check(sex){ //성별체크양식
+    if(sex !='m' && sex!='f')
     {
         return false;
     }
@@ -29,7 +29,7 @@ function sex_check(sex){
 module.exports.guardian_info_request = (req,res)=>{
     let id = req.body.id; //보호자 id
     pool.getConnection().then((conn)=>{
-        conn.query(`select * from ${테이블명} where id = ${id}`).then((data)=>{
+        conn.query(`select * from protector where protector_id = ${id}`).then((data)=>{
             console.log(data[0])
             res.status(200).send(data[0])
         }).catch((err)=>{
@@ -45,10 +45,10 @@ module.exports.guardian_info_request = (req,res)=>{
 }
 //보호자 정보 삽입
 module.exports.gurdian_info_insert= (req,res)=>{
-    let id = req.body.id;
-    let name = req.body.name;
-    let number = req.body.number;
-    let patient_id = req.body.patient_id;
+    let id = req.body.id; //보호자아이디
+    let name = req.body.name; //보호자이름
+    let number = req.body.number; //보호자연락처
+    let patient_id = req.body.patient_id; //독거인id
     
     if(!phone_check(number))
     {
@@ -56,7 +56,7 @@ module.exports.gurdian_info_insert= (req,res)=>{
     }
     
     pool.getConnection().then((conn)=>{
-        conn.query(`insert into ${테이블명} set() values()`).then((data)=>{
+        conn.query(`insert into protector (protector_id,protector_name,protector_phone,sid) values(${id},'${name}','${number}',${patient_id})`).then((data)=>{
             res.status(200).send({'key':7}) //정보 삽입 성공
         }).catch((err)=>{
             console.log(err.code);
@@ -71,10 +71,10 @@ module.exports.gurdian_info_insert= (req,res)=>{
 
 //보호자 정보 수정 #일괄 수정 전제
 module.exports.gurdian_info_modification= (req,res)=>{
-    let id = req.body.id;
-    let name = req.body.name;
-    let number = req.body.number;
-    let patient_id = req.body.patient_id;
+    let id = req.body.id; //보호자아이디
+    let name = req.body.name; //보호자이름
+    let number = req.body.number; //보호자연락처
+    let patient_id = req.body.patient_id; //독거인Id
     
     if(!phone_check(number))
     {
@@ -82,7 +82,7 @@ module.exports.gurdian_info_modification= (req,res)=>{
     }
     
     pool.getConnection().then((conn)=>{
-        conn.query(`update ${테이블명} ~~ where id = ${조건}`).then((data)=>{
+        conn.query(`update protector set protector_name = '${name}',protector_phone='${number}',sid=${patient_id} where protector_id=${id}`).then((data)=>{
             res.status(200).send({'key':8}) //정보 수정 성공
         }).catch((err)=>{
             console.log(err.code);
@@ -96,12 +96,12 @@ module.exports.gurdian_info_modification= (req,res)=>{
 }
 //보호자 정보 삭제
 module.exports.gurdian_info_delete= (req,res)=>{
-    let id = req.body.id;
+    let id = req.body.id; //보호자Id
 
 
     
     pool.getConnection().then((conn)=>{
-        conn.query(`delete from ${테이블명} where id = ${조건}`).then((data)=>{
+        conn.query(`update protector set protector_name = null, protector_phone=null,sid=null where protector_id=${id}`).then((data)=>{
             res.status(200).send({'key':9}) //정보 삭제 성공
         }).catch((err)=>{
             console.log(err.code);
@@ -114,13 +114,13 @@ module.exports.gurdian_info_delete= (req,res)=>{
     })
 }
 
-//환자정보
+//독거인 함수 시작
 
 //독거인 정보 요청
 module.exports.patient_info_request = (req,res)=>{
     let id = req.body.id; //독거인 id
     pool.getConnection().then((conn)=>{
-        conn.query(`select * from ${테이블명} where id = ${id}`).then((data)=>{
+        conn.query(`select * from sol_person where sol_id = ${id}`).then((data)=>{
             console.log(data[0])
             res.status(200).send(data[0])
         }).catch((err)=>{
@@ -139,8 +139,8 @@ module.exports.patient_info_request = (req,res)=>{
 module.exports.patient_info_insert= (req,res)=>{
     let id = req.body.id; //독거인아이디
     let name = req.body.name; //이름
-    let dept_number = req.body.dept_number; //건물번호
-    let inst_id = req.body.inst_id //기관 아이디
+    let dept_number = req.body.dept_number; //사용건물 아이디
+    let inst_id = req.body.inst_id //담당 기관 아이디
     let age = req.body.age;//나이
     let sex = req.body.sex;//성별
     let date = req.body.date; //생년월일
@@ -151,7 +151,7 @@ module.exports.patient_info_insert= (req,res)=>{
     }
     
     pool.getConnection().then((conn)=>{
-        conn.query(`insert into ${테이블명} set() values()`).then((data)=>{
+        conn.query(`insert into sol_person (sol_id, sol_name, inst_id,bid,birth,age,sex) values(${id},'${name}',${inst_id},${dept_number},'${date}',${age},'${sex}')`).then((data)=>{
             res.status(200).send({'key':7}) //정보 삽입 성공
         }).catch((err)=>{
             console.log(err.code);
@@ -167,10 +167,10 @@ module.exports.patient_info_insert= (req,res)=>{
 
 
 //독거인정보 수정 #일괄 수정 전제
-module.exports.gurdian_info_modification= (req,res)=>{
+module.exports.patient_info_modification= (req,res)=>{
     let id = req.body.id; //독거인아이디
     let name = req.body.name; //이름
-    let dept_number = req.body.dept_number; //건물번호
+    let dept_number = req.body.dept_number; //사용건물 아이디
     let inst_id = req.body.inst_id //기관 아이디
     let age = req.body.age;//나이
     let sex = req.body.sex;//성별
@@ -183,7 +183,7 @@ module.exports.gurdian_info_modification= (req,res)=>{
     }
     
     pool.getConnection().then((conn)=>{
-        conn.query(`update ${테이블명} ~~ where id = ${조건}`).then((data)=>{
+        conn.query(`update sol_person set sol_name = '${name}', bid = ${dept_number},inst_id=${inst_id},birth='${date}',age=${age},sex='${sex}' where ${id}`).then((data)=>{
             res.status(200).send({'key':8}) //정보 수정 성공
         }).catch((err)=>{
             console.log(err.code);
@@ -195,11 +195,11 @@ module.exports.gurdian_info_modification= (req,res)=>{
         res.status(200).send({'key':0}) //시스템 내부 오류 0번 지정
     })
 }
-//보호자 정보 삭제
-module.exports.gurdian_info_delete= (req,res)=>{
+//독거인 정보 삭제
+module.exports.patient_info_delete= (req,res)=>{
     let id = req.body.id;
     pool.getConnection().then((conn)=>{
-        conn.query(`delete from ${테이블명} where id = ${조건}`).then((data)=>{
+        conn.query(`update sol_person set sol_name = null, bid = null, inst_id =null,birth=null, age=null, sex=null where sol_id = ${id}`).then((data)=>{
             res.status(200).send({'key':9}) //정보 삭제 성공
         }).catch((err)=>{
             console.log(err.code);

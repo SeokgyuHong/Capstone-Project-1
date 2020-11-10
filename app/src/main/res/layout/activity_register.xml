@@ -7,67 +7,164 @@
     tools:context=".RegisterActivity">
 
     <LinearLayout
-        android:layout_width="369dp"
-        android:layout_height="559dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="150dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="50dp"
+        android:id="@+id/materialTextView"
+        android:layout_width="match_parent"
+        android:layout_height="118dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/materialTextView"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:text="회원가입"
+            android:gravity="center"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="59dp"
+            android:orientation="horizontal"
+
+            android:weightSum="3">
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:text="필수정보 입력"
+                android:textStyle="bold"
+                android:textColor="@color/colorAccent"
+                android:background="@drawable/edge6"
+                android:gravity="center"
+                android:layout_width="0dp" />
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:text="추가정보 입력"
+                android:gravity="center"
+                android:background="@drawable/edge5"
+                android:layout_width="0dp" />
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:text="회원가입 완료"
+                android:background="@drawable/edge5"
+                android:gravity="center"
+                android:layout_width="0dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="360dp"
+        android:layout_height="302dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="20dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/materialTextView"
+        app:layout_constraintVertical_bias="0.35"
+
         tools:ignore="ExtraText">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="68dp"
-            android:orientation="horizontal">
+            android:layout_height="302dp"
 
+            android:orientation="vertical">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="252dp"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:hint="아이디 (이메일 주소)"
-                android:inputType="textEmailAddress"/>
-
-            <com.google.android.material.button.MaterialButton
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="중복확인"/>
+                android:layout_height="68dp"
+                android:orientation="horizontal">
 
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="68dp"
-            android:orientation="horizontal">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/email"
+                    android:layout_width="250dp"
+                    android:layout_height="58dp"
+                    android:gravity="left|center"
+                    android:hint="아이디 (이메일 주소)"
+                    android:background="@drawable/edge4"
+                    android:inputType="textEmailAddress"
+                    android:paddingLeft="13sp"
+                    android:textSize="15sp" />
 
-            <com.google.android.material.textfield.TextInputEditText
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/EmailCheck"
+                    android:layout_marginLeft="5dp"
+                    android:layout_width="100dp"
+                    android:layout_height="63dp"
+                    android:gravity="center|center"
+                    android:text="중복확인"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:hint="비밀번호"
-                android:inputType="textPassword"/>
+                android:layout_height="68dp"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
 
-        </LinearLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/pw"
+                    android:layout_width="match_parent"
+                    android:layout_height="58dp"
+                    android:gravity="left|center"
+                    android:hint="비밀번호"
+                    android:paddingLeft="13sp"
+                    android:background="@drawable/edge4"
+                    android:inputType="textPassword"
+                    android:textSize="15sp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="68dp"
-            android:orientation="horizontal">
+            </LinearLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:hint="비밀번호 확인"
-                android:inputType="textPassword"/>
-        </LinearLayout>
+                android:layout_height="68dp"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
 
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/pw_confirm"
+                    android:layout_width="match_parent"
+                    android:layout_height="58dp"
+                    android:background="@drawable/edge4"
+                    android:gravity="left|center"
+                    android:hint="비밀번호 확인"
+                    android:inputType="textPassword"
+                    android:paddingLeft="13sp"
+                    android:textSize="15sp" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/confirm_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="확 인"
+                    android:textSize="16sp"
+                    android:textColor="@color/colorAccent"
+                    />
+            </LinearLayout>
+        </LinearLayout>
 
     </LinearLayout>
 

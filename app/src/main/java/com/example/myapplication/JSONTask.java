@@ -41,6 +41,7 @@ public class JSONTask extends AsyncTask<String, String, String> {
     public JSONTask(Object newToken){
         NewToken = newToken;
     }
+
     @Override
     protected String doInBackground(String... urls) {
         try {
@@ -113,8 +114,6 @@ public class JSONTask extends AsyncTask<String, String, String> {
         }
         return null;
     }
-
-
 
     @Override
     protected void onPostExecute(String result) {

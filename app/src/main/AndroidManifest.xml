@@ -12,10 +12,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="MissingClass"
         android:usesCleartextTraffic="true"
-        >
-
+        tools:ignore="MissingClass">
+        <activity android:name=".delete_accout_activity"></activity>
+        <activity android:name=".account_register_complete" />
+        <activity android:name=".additional_inform_register" />
         <activity android:name=".kakaoactivity" />
 
         <meta-data
@@ -56,9 +57,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_login"
-            android:theme="@style/AppTheme.NoActionBar" >
-
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ContentActivity"
             android:parentActivityName=".MainActivity" />

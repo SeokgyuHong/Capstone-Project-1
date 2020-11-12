@@ -72,39 +72,57 @@ module.exports.institution_insert = (req,res)=>{
     let rep_email = req.body.rep_email; //대표자 이메일
     let rep_password = req.body.rep_password; //대표자 비밀번호
     let business_num = req.body.business_num; //사업자 번호
+    let key=0
+    let err_code =''
     if(!e_mail_check(rep_email))
     {
-        res.status(200).send({'key':1}) //이메일 양식 에러
-        
+        //res.status(200).send({'key':1}) //이메일 양식 에러
+        key=1
     }
     if(!phone_check(inst_phone))
     {
-        res.status(200).send({'key':2})//기관번호 양식 에러
+        //res.status(200).send({'key':2})//기관번호 양식 에러
+        key=2
     }
     if(!phone_check(rep_phone))
     {
-        res.status(200).send({'key':3})//대표자번호 양식 에러
+        //res.status(200).send({'key':3})//대표자번호 양식 에러
+        key=3
+        res.send({'key':3,'err_code':'양식에러'})
+        return;
     }
     if(!company_check(business_num))
     {
-        res.status(200).send({'key':4}) //사업자번호 양식 에러
+        //res.status(200).send({'key':4}) //사업자번호 양식 에러
+        key=4
     }
     
     pool.getConnection().then((conn)=>{
         conn.query(`insert into institution (institution_id,inst_name,inst_phone,activation,rep_name,rep_phone,rep_email,rep_password,business_num)values(${inst_id},'${inst_name}','${inst_phone}','N','${rep_name}','${rep_phone}','${rep_email}','${rep_password}','${business_num}')`).then((data)=>{
             console.log(data);
-            res.status(200).send({'key':5}) //데이터 삽입 성공
+            console.log('삽입성공')
+            key=5
+            res.send({'key':key,'err_code':err_code})
+            
         }).catch((err)=>{
             console.log(err);
-            res.status(200).send({'key':err.code}); //에러코드 전송
+            console.log('삽입실패');
+            key=6
+            err_code =err.code;
+            res.send({'key':key,'err_code':err_code})
+            
         })
         conn.release();
     }).catch((err)=>{
         console.log(err.code);
-        res.status(200).send({'key':err.code}); //에러코드 전송
+        err_code =err.code;
+        key=7
+        res.send({'key':key,'err_code':err_code})
     })
 
+    
 
+    
     
 }
 //기관정보수정

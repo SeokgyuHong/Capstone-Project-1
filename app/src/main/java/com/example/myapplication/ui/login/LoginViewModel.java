@@ -35,6 +35,9 @@ public class LoginViewModel extends ViewModel {
 
 //        if (result instanceof Result.Success && username.equals("ljs3271@naver.com") && isUserNameValid(username)
 //                && password.equals("123456") && isPasswordValid(password)) {
+        //username, password를 전송하고 , 결과값을 보고 true이면 mainactivity로 false이면 올바르지 않은 계정이라고
+        // 이 때 로그인 성공시 email, name 을 sharedpreference에 저장. login type 은 general로
+
         if (result instanceof Result.Success) {
             LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
             loginResult.setValue(new LoginResult(new LoggedInUserView(data.getDisplayName())));
@@ -45,9 +48,9 @@ public class LoginViewModel extends ViewModel {
 
     public void loginDataChanged(String username, String password) { // 로그인을 치고있을 때
         if (!isUserNameValid(username)) {
-            loginFormState.setValue(new LoginFormState(R.string.invalid_username, null));
+            //loginFormState.setValue(new LoginFormState(R.string.invalid_username, null));
         } else if (!isPasswordValid(password)) {
-            loginFormState.setValue(new LoginFormState(null, R.string.invalid_password));
+            //loginFormState.setValue(new LoginFormState(null, R.string.invalid_password));
 
         } else {
             loginFormState.setValue(new LoginFormState(true));

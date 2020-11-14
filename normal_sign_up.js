@@ -2,8 +2,11 @@
 const {log_info} = require('./db_loginfo.js');
 const {insert} = require('./db_sql.js');
 const {pool} = require('./db_connect');
+const info = require('./db_loginfo')
 const {send_mail} = require('./send_mail');
 const format_check = require('./format_check');
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 
 module.exports.id_duplication_check = (req,res)=>{
     let email_address = req.body.email_address
@@ -15,7 +18,7 @@ module.exports.id_duplication_check = (req,res)=>{
     }
 
     pool.getConnection().then((conn)=>{
-        conn.query(`select email_address from user where email_address='${email_address}'`).then((data)=>{ //아이디 중복여부 체크 쿼리
+        conn.query(`select email_address from User where email_address='${email_address}'`).then((data)=>{ //아이디 중복여부 체크 쿼리
             if(data[0] ===undefined) 
             {
                res.send({'key':2}) //이메일 중복 x
@@ -34,42 +37,65 @@ module.exports.id_duplication_check = (req,res)=>{
         res.send({'key':0,'err_code':err.code}) //0 은 시스템 에러 
     })
 }
+
+
 module.exports.temp_pw_create = (req,res)=>{
     let email_address = req.body.email_address //이메일주소
-    let temp_password=0
+    let mail_info = info.mail_config(); // 전송 이메일 정보
+    let mail_option = send_mail(email_address);
+    let mailOption;
+    let temp_password;
+    
+    mailOption=mail_option.mailOption; //메일전송객체
+    temp_password = mail_option.temp_pw; //임시비밀번호
+
 
     if(!format_check.e_mail_check(email_address)) //이메일 양식 체크
     {
         res.send({'key':1}) //이메일 양식 에러
         return;
     }
-    temp_password=send_mail(email_address) //임시비밀번호 생성 메일 전송
-    if(temp_password==false)
-    {
-        res.send({'key':2}) //임시비밀번호 생성오류
-    }
-    pool.getConnection().then((conn)=>{
-        conn.query(`insert into Temp_user (email_address,temp_password) values('${email_address}','${temp_password}')`).then((data)=>{ 
-            res.send({'key':3})//임시비밀번호 생성완료
+    let transporter = nodemailer.createTransport({ //메일전송객체 생성
+        service:'gmail',
+        auth:{
+            user:mail_info.id,
+            pass:mail_info.pw
+        }
+    });
+    transporter.sendMail(mailOption).then((info)=>{ //메일전송
+        console.log('Email sent: ' + info.response);
+        pool.getConnection().then((conn)=>{
+            conn.query(`insert into Temp_user (email_address,temp_password)
+            values('${email_address}','${temp_password}')`).then((data)=>{
+                res.send({'key':3}) // 임시비밀번호 생성완료
+            }).catch((err)=>{
+                console.log(err.code)
+                res.send({'key':0,'err_code':err.code});
+            })
+            conn.release();
         }).catch((err)=>{
-            console.log(err.code);
-            res.send({'key':0,'err_code':err.code}); //시스템오류
-
+            console.log(err.code)
+            res.send({'key':0,'err_code':err.code});
         })
-        conn.release();
     }).catch((err)=>{
-        console.log(err.code);
-        res.send({'key':0,'err_code':err.code}); //시스템오류
+        if(err)
+        {
+            console.log(err)
+            console.log('이메일 발송부 에러')
+            res.send({'key':2}) //임시비밀번호 생성 및 이메일 처리 오류
+        }
     })
-        
 
 }
+
+
 module.exports.temp_pw_check = (req,res)=>{ 
     let email_address = req.body.email_address //이메일주소
-    let temp_password= Req.body.temp_password;
+    let temp_password= req.body.temp_password;
+
     pool.getConnection().then((conn)=>{
         conn.query(`select temp_password from Temp_user where email_address='${email_address}'`).then((data)=>{
-            if (data[0]==temp_password)
+            if (data[0]['temp_password']==temp_password)
             {
                 res.send({'key':1})//임시비밀번호 일치
             }
@@ -91,6 +117,7 @@ module.exports.normal_sign_up = (req,res)=>{
     let password = req.body.password // 비밀번호
     let phone_number = req.body.phone_number //휴대폰 번호
     let hashed_password=''
+    
     let salt=''
     crypto.randomBytes(64,(err,buffer)=>{
         crypto.pbkdf2(password, buffer.toString('base64'), 130495, 64, 'sha512', (err, hashed)=> {
@@ -106,12 +133,12 @@ module.exports.normal_sign_up = (req,res)=>{
     pool.getConnection().then((conn)=>{
         conn.query(`delete from Temp_user where email_address ='${email_address}'`).then((data)=>{
             console.log('임시 비밀번호 데이터 삭제 성공')
-            conn.query(`insert into User set(email_address,phone_number,inst_name,inst_address,password,salt) 
-            values('${email_address}','${phone_number}','${inst_name}','${inst_address}','${hashed_password}','${salt}')`).then((data)=>{
+            conn.query(`insert into User (email_address,phone_number,inst_name,inst_address,password,salt,user_type)
+            values('${email_address}','${phone_number}','${inst_name}','${inst_address}','${hashed_password}','${salt}','normal')`).then((data)=>{
                 console.log('회원가입 성공')
                 res.send({'key':1}) //회원가입성공
             }).catch((err)=>{
-                console.log(err.code)
+                console.log(err)
                 res.send({'key':2,'err_code':err.code})// 회원가입실패
             })
         

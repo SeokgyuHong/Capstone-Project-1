@@ -1,17 +1,21 @@
-var express = require('express');
-var app = express();
-var nodemailer = require('nodemailer');
-var fs = require('fs');
-var path = require('path');
-var bodyparser = require('body-parser');
+const express = require('express');
+const app = express();
+const nodemailer = require('nodemailer');
+const fs = require('fs');
+const path = require('path');
+const bodyparser = require('body-parser');
 
-var {send_mail}= require('./send_mail');
-var {send_fcm} = require('./send_fcm');
+const {send_mail}= require('./send_mail');
+const {send_fcm} = require('./send_fcm');
 //var {save_login_info} = require('./login');
 
 
-var db_sql = require('./db_sql');
-var db_sql_exam2=require('./db_sql_exam2');
+const normal_sign_up = require('./normal_sign_up'); // 일반계정 회원가입 모듈
+
+const db_sql = require('./db_sql');
+const db_sql_exam2=require('./db_sql_exam2');
+
+
 app.use(bodyparser.json())
 app.use(express.urlencoded({extended:false}))
 
@@ -28,6 +32,17 @@ app.post('/inst_modify',db_sql_exam2.institution_modify);//기관정보수정 �
 app.post('/inst_insert',db_sql_exam2.institution_insert);
 app.post('/alarm_count_request',db_sql.sql_alarm_count);
 app.post('/alarm_data_request',db_sql.sql_alarm_data_request);
+
+
+
+//일반계정 회원가입
+app.post('/id_duplication_check',normal_sign_up.id_duplication_check);
+app.post('/temp_pw_create',normal_sign_up.temp_pw_create);
+app.post('/temp_pw_check',normal_sign_up.temp_pw_check);
+app.post('/normal_sign_up',normal_sign_up.normal_sign_up);
+
+
+
 app.listen(8080, function() {
     console.log('Example app listening on port 8080!')
   });

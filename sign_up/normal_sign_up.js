@@ -1,6 +1,6 @@
 //프로젝트 실사용 로그인 
 const {insert} = require('../db_sql.js');
-const {pool} = require('../db_connect');
+const {pool} = require('../secret_info/db_connect');
 const info = require('../secret_info/db_loginfo')
 const {send_mail} = require('../send_mail');
 const format_check = require('../format_check');

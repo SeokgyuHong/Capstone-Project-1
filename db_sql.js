@@ -1,4 +1,4 @@
-const {pool} = require('./db_connect');
+const {pool} = require('./secret_info/db_connect');
 const { resolveContent } = require('nodemailer/lib/shared');
 
 //social 네이버 계정 로그인시 저장하는 함수 

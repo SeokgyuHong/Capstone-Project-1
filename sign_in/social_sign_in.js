@@ -1,5 +1,5 @@
 
-const {pool} = require('../db_connect');
+const {pool} = require('../secret_info/db_connect');
 const format_check = require('../format_check');
 
 

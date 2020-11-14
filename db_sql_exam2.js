@@ -1,5 +1,5 @@
 // 10월 28일 과제 
-const {pool} = require('./db_connect');
+const {pool} = require('./secret_info/db_connect');
 function e_mail_check(e_mail){ //이메일 정규식 체크 함수
     let e_mail_check = /^[0-9a-zA-z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;     
     if(!e_mail_check.test(e_mail))

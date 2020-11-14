@@ -23,14 +23,19 @@ module.exports.social_sign_up = (req,res)=>{
         res.send({'key':1})
         return;
     }
+    if(!format_check.phone_check(phone_number)) //휴대폰 번호 양식 체크
+    {
+        res.send({'key':2}) //휴대폰번호 양식 에러
+        return;
+    }
     pool.getConnection().then((conn)=>{
         conn.query(`insert into User (email_address, inst_name, inst_address, phone_number, user_type)
         values('${email_address}','${inst_name}','${inst_address}','${phone_number}','${user_type}')`).then((data)=>{
             console.log('회원가입 성공')
-            res.send({'key':1}) // 회원가입성공
+            res.send({'key':3}) // 회원가입성공
         }).catch((err)=>{
             console.log(err)
-            res.send({'key':2,'err_code':err.code})//회원가입실패
+            res.send({'key':4,'err_code':err.code})//회원가입실패
         })
         conn.release();
     }).catch((err)=>{

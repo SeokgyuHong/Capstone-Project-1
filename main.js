@@ -15,7 +15,14 @@ const social_sign_up = require('./sign_up/social_sign_up'); //소셜계정　회
 const db_sql = require('./db_sql');
 const db_sql_exam2=require('./db_sql_exam2');
 
-const normal_sign_in = require('./sign_in/normal_sign_in');
+const normal_sign_in = require('./sign_in/normal_sign_in'); //일반계정 로그인
+const social_sign_in = require('./sign_in/social_sign_in'); //소셜계정 로그인
+
+
+//계정정보체크
+const account_information_check = require('./account_information/account_information_check');
+const account_information_modification = require('./account_information/account_information_modification');
+const password_modification = require('./account_information/password_modification');
 
 app.use(bodyparser.json())
 app.use(express.urlencoded({extended:false}))
@@ -47,8 +54,20 @@ app.post('/id_duplication_check',normal_sign_up.id_duplication_check); //소설�
 app.post('/social_sign_up',social_sign_up.social_sign_up);
 
 
-
+//일반계정 로그인
 app.post('/normal_sign_in',normal_sign_in.normal_sign_in); //일반계정 로그인
+
+//소셜계정 로그인
+app.post('/social_sign_in',social_sign_in.social_sign_in); //소셜계정 로그인
+
+//계정정보 체크
+app.post('/account_information_check',account_information_check.account_information_check);
+app.post('/account_information_modification',account_information_modification.account_information_modification);
+
+//비밀번호변경
+app.post('/user_type_check',password_modification.user_type_check); //유저타입 체크함수
+app.post('/password_modification',password_modification.password_modification);//패스워드변경
+
 
 
 app.listen(8080, function() {

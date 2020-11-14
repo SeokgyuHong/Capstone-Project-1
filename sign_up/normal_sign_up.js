@@ -6,7 +6,6 @@ const {send_mail} = require('../send_mail');
 const format_check = require('../format_check');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
-
 module.exports.id_duplication_check = (req,res)=>{
     let email_address = req.body.email_address
 
@@ -116,10 +115,16 @@ module.exports.normal_sign_up = (req,res)=>{
     let password = req.body.password // 비밀번호
     let phone_number = req.body.phone_number //휴대폰 번호
     let hashed_password=''
-    
+    let salt_num = info.salt_num();
+
+    if(!format_check.phone_check(phone_number)) //휴대폰번호 양식 체크
+    {
+        res.send({'key':2}) //휴대폰번호 양식 에러
+        return;
+    }
     let salt=''
     crypto.randomBytes(64,(err,buffer)=>{
-        crypto.pbkdf2(password, buffer.toString('base64'), 130495, 64, 'sha512', (err, hashed)=> {
+        crypto.pbkdf2(password, buffer.toString('base64'), salt_num, 64, 'sha512', (err, hashed)=> {
             if(err){
             console.log(err);
             } else{
@@ -135,10 +140,10 @@ module.exports.normal_sign_up = (req,res)=>{
             conn.query(`insert into User (email_address,phone_number,inst_name,inst_address,password,salt,user_type)
             values('${email_address}','${phone_number}','${inst_name}','${inst_address}','${hashed_password}','${salt}','normal')`).then((data)=>{
                 console.log('회원가입 성공')
-                res.send({'key':1}) //회원가입성공
+                res.send({'key':3}) //회원가입성공
             }).catch((err)=>{
                 console.log(err)
-                res.send({'key':2,'err_code':err.code})// 회원가입실패
+                res.send({'key':4,'err_code':err.code})// 회원가입실패
             })
         
         }).catch((err)=>{

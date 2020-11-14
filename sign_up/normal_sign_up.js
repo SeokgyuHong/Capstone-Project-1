@@ -1,5 +1,4 @@
 //프로젝트 실사용 로그인 
-const {log_info} = require('../secret_info/db_loginfo.js');
 const {insert} = require('../db_sql.js');
 const {pool} = require('../db_connect');
 const info = require('../secret_info/db_loginfo')

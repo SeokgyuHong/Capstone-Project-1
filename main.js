@@ -15,6 +15,7 @@ const social_sign_up = require('./sign_up/social_sign_up'); //소셜계정　회
 const db_sql = require('./db_sql');
 const db_sql_exam2=require('./db_sql_exam2');
 
+const normal_sign_in = require('./sign_in/normal_sign_in');
 
 app.use(bodyparser.json())
 app.use(express.urlencoded({extended:false}))
@@ -44,6 +45,11 @@ app.post('/normal_sign_up',normal_sign_up.normal_sign_up); //일반계정 회원
 //소셜계정 회원가입
 app.post('/id_duplication_check',normal_sign_up.id_duplication_check); //소설계정 회원가입 
 app.post('/social_sign_up',social_sign_up.social_sign_up);
+
+
+
+app.post('/normal_sign_in',normal_sign_in.normal_sign_in); //일반계정 로그인
+
 
 app.listen(8080, function() {
     console.log('Example app listening on port 8080!')

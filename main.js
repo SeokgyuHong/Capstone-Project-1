@@ -10,7 +10,7 @@ const {send_fcm} = require('./send_fcm');
 //var {save_login_info} = require('./login');
 
 
-const normal_sign_up = require('./normal_sign_up'); // 일반계정 회원가입 모듈
+const normal_sign_up = require('./sign_up/normal_sign_up'); // 일반계정 회원가입 모듈
 
 const db_sql = require('./db_sql');
 const db_sql_exam2=require('./db_sql_exam2');

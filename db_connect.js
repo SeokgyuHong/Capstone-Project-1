@@ -1,5 +1,5 @@
 const mariadb = require('mariadb');
-const {config} = require('./db_loginfo');
+const {config} = require('./secret_info/db_loginfo');
 
 
 var info = config();

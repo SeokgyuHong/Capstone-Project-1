@@ -1,5 +1,5 @@
 var nodemailer = require('nodemailer');
-var info = require('./db_loginfo')
+var info = require('./secret_info/db_loginfo')
 var mail_info = info.mail_config();
 module.exports.send_mail = (email)=>{
 

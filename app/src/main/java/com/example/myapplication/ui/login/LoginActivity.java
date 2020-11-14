@@ -49,10 +49,13 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.kakao.auth.AccessTokenCallback;
 import com.kakao.auth.ApiErrorCode;
+import com.kakao.auth.ApiResponseCallback;
+import com.kakao.auth.AuthService;
 import com.kakao.auth.AuthType;
 import com.kakao.auth.ISessionCallback;
 import com.kakao.auth.Session;
 import com.kakao.auth.authorization.accesstoken.AccessToken;
+import com.kakao.auth.network.response.AccessTokenInfoResponse;
 import com.kakao.network.ErrorResult;
 import com.kakao.sdk.auth.LoginClient;
 import com.kakao.sdk.auth.model.OAuthToken;
@@ -80,6 +83,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -129,9 +133,24 @@ public class LoginActivity extends AppCompatActivity  {
     private String apiURL;
     private String Naver_profile_ReadBody;
     private String Email;
+    private String first_naver_login;
+    private String naver_access_token_check;
+
+    private SharedPreferences login_information_pref;
+    private SharedPreferences login_log_pref;
+
+    private SharedPreferences.Editor login_infromation_editor;
+    private SharedPreferences.Editor login_log_editor;
+
     Session Kakao_session;
     private LoginRepository KakaoTalkService;
-
+    /*
+    * sns 로그인 구현시 필독
+    * 로그인시 email을 서버에 전송해서 이게 db에 이미 있는지 check, 없으면 추가정보 page로 넘아가고
+    * 아니면 바로 로그인.
+    *
+    *
+    * */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
@@ -143,24 +162,15 @@ public class LoginActivity extends AppCompatActivity  {
         mContext = this;
         //session 값에서 어떤 로그인할지 정하기.. ?
         getHashKey();
-        //getAppKeyHash();
         btn_custom_login = (Button) findViewById(R.id.btn_kakao_login_custom);
 
         sessionCallback = new SessionCallback(mContext);
         Kakao_session = Session.getCurrentSession();
         Kakao_session.addCallback(sessionCallback);
-       // Kakao_session.is1
+        Kakao_session.checkAndImplicitOpen();// 카카오 자동로그인
 
-        if(Kakao_session.checkAndImplicitOpen()){
-            // 액세스토큰이 존재하거나 리프레시 토큰으로 액세스 토큰 갱신을 시도할 수 있는 경우
-            System.out.println("login" + " : 토큰있음");
-            Log.e("login", "카카오 토큰있음");
-            // 사용자 동의 요청
-        }else{
-            // 무조건 재로그인을 시켜야 하는 경우 (리토 만료)
-            System.out.println("login" + " : 토큰없음");
-            Log.e("login", "카카오 토큰없음");
-        }
+        login_log_pref = getSharedPreferences("SNS_login_log", Activity.MODE_PRIVATE);
+        first_naver_login = login_log_pref.getString("first_naver_login", "true");
 
         /*네이버 로그인 구현*/
         mOAuthLoginModule = OAuthLogin.getInstance();
@@ -179,14 +189,15 @@ public class LoginActivity extends AppCompatActivity  {
             public void run(boolean success) {
                     if (success) {// naver access이 있다면
 
-                    String accessToken = mOAuthLoginModule.getAccessToken(mContext);
-                    String refreshToken = mOAuthLoginModule.getRefreshToken(mContext);
-                    Log.e("Token accessToken", accessToken);
-                    Log.e("Token refreshToken", refreshToken);
 
-                    /*long expiresAt = mOAuthLoginModule.getExpiresAt(mContext);
-                    String tokenType = mOAuthLoginModule.getTokenType(mContext);
-                     */
+                        String accessToken = mOAuthLoginModule.getAccessToken(mContext);
+                        String refreshToken = mOAuthLoginModule.getRefreshToken(mContext);
+                        Log.e("Token accessToken", accessToken);
+                        Log.e("Token refreshToken", refreshToken);
+
+                        /*long expiresAt = mOAuthLoginModule.getExpiresAt(mContext);
+                        String tokenType = mOAuthLoginModule.getTokenType(mContext);
+                         */
                         if(!Kakao_session.checkAndImplicitOpen()){ // 카카오 세션이 없다면 page가 넘어감
                             Log.e("Login Check", "kakao Session이 없고 naver로그인 성공");
                              // 네이버 로그인 접근 토큰;
@@ -202,27 +213,37 @@ public class LoginActivity extends AppCompatActivity  {
                             responseBody = Naver_profile_ReadBody;
                             //System.out.println(responseBody);
                             Log.e("Naver login", responseBody);
-                            SharedPreferences pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = pref.edit();
-                            editor.putString("type" , "naver");
-                            editor.commit();
-    //
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-    //                        Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
-    //                        intent.putExtra("email", Email);
-    //                        intent.putExtra("type","naver");
-    //                        Log.e("Naver_login 성공 ", Email);
-    //                        //intent.putExtra("pw", PasswordConfirmText.getText().toString());
-    //                        startActivity(intent);
-                    }
 
+                            login_information_pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
+                            login_infromation_editor = login_information_pref.edit();
+                            login_infromation_editor.putString("login_type" , "naver");
+                            login_infromation_editor.commit();
+
+                            if(first_naver_login.equals("true")){
+                                Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
+                                intent.putExtra("email", Email);
+                                intent.putExtra("login_type","naver");
+
+                                login_log_pref = getSharedPreferences("SNS_login_log", Activity.MODE_PRIVATE);
+                                login_log_editor = login_log_pref.edit();
+                                login_log_editor.putString("first_naver_login" , "false");
+                                login_log_editor.commit();
+                                Log.e("Naver_login 성공 ", Email);
+                                //intent.putExtra("pw", PasswordConfirmText.getText().toString());
+                                startActivity(intent);
+                            }
+                            else if(first_naver_login.equals("false")){
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                    }
                 } else { //로그인 실패시 핸들러
                     /*String errorCode = mOAuthLoginModule.getLastErrorCode(mContext).getCode();
                     String errorDesc = mOAuthLoginModule.getLastErrorDesc(mContext);
                     Toast.makeText(mContext, "errorCode:" + errorCode
                             + ", errorDesc:" + errorDesc, Toast.LENGTH_SHORT).show();*/
+                    Log.e("naver_login", "로그인 실패");
                 }
             };
         };
@@ -231,7 +252,6 @@ public class LoginActivity extends AppCompatActivity  {
                     @Override
                     public void onClick(View view) {
                         mOAuthLoginModule.startOauthLoginActivity((Activity) mContext, mOAuthLoginHandler); //로그인 시작.Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
-
                     }
                 }
         );
@@ -405,7 +425,7 @@ public class LoginActivity extends AppCompatActivity  {
                             JSONObject jsonObject = new JSONObject(Naver_profile_ReadBody);
                             JSONObject naver_object = jsonObject.getJSONObject("response");
                             // resonse 부분만 따로 빼낼것임 굳이 이렇게 안해도됨
-                            Email = naver_object.getString("name");
+                            Email = naver_object.getString("email");
                             sendProfile("naver", naver_object.getString("name"),
                                     naver_object.getString("age"), naver_object.getString("email"),
                                     naver_object.getString("gender"),naver_object.getString("birthday"));
@@ -485,13 +505,32 @@ public class LoginActivity extends AppCompatActivity  {
         writer.close();//버퍼를 받아줌
         Log.e("naver profile", "profile 정보 서버 전송중");
         //서버로 부터 데이터를 받음
-        InputStream stream = con.getInputStream();
+        InputStream stream = con.getInputStream();;
+        ByteArrayOutputStream baos = null;
+//        if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+//
+//            baos = new ByteArrayOutputStream();
+//            byte[] byteBuffer = new byte[1024];
+//            byte[] byteData = null;
+//            int len = 0;
+//            while((len = stream.read(byteBuffer, 0, byteBuffer.length)) != -1){
+//                baos.write(byteBuffer, 0, len);
+//            }
+//            byteData = baos.toByteArray();
+//
+//            String response = new String(byteData);
+//            JSONObject responseJSON = new JSONObject(response);
+//            Boolean result = (Boolean) responseJSON.get("result");
+//            String state = (String)responseJSON.get("hi");
+//        }
+
         reader = new BufferedReader(new InputStreamReader(stream));
         StringBuilder buffer = new StringBuilder();
         String line = "";
         while((line = reader.readLine()) != null){
             buffer.append(line);
         }
+        Log.e("sns_받은 데이터", buffer.toString());
         Log.e("naver profile", "profile 정보 서버 전송 완료");
     }
 
@@ -579,17 +618,39 @@ public class LoginActivity extends AppCompatActivity  {
             if(OAuthLoginState.NEED_LOGIN.equals(OAuthLogin.getInstance().getState(mContext))) {
                 Log.e("Login Activitiy", "Naver login 안되어있음.");
                 getAgree();
-                requestMe();
+                kakao_user_information_request();
 
-                SharedPreferences pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
-                SharedPreferences.Editor editor = pref.edit();
-                editor.putString("type" , "kakao");
-                editor.commit();
+                login_log_pref = getSharedPreferences("SNS_login_log", Activity.MODE_PRIVATE);
+                String first_kakao_login = login_log_pref.getString("first_kakao_login", "true");
 
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);//  성공하고 다음페이지로 넘어감
+                login_log_editor = login_log_pref.edit();
+                //login_log_editor.putString("login_type" , "kakao");
+                //login_log_editor.commit();
 
-                finish();
+                if(first_kakao_login.equals("true")){
+                    Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
+                    intent.putExtra("email", Email);
+                    intent.putExtra("login_type","kakao");
+
+                    login_log_editor = login_log_pref.edit();
+                    login_log_editor.putString("first_kakao_login" , "false");
+                    login_log_editor.commit();
+                    Log.e("Kakao_login 성공 ", "tqtqtqtqtqtqtqtq");
+                    //intent.putExtra("pw", PasswordConfirmText.getText().toString());
+                    startActivity(intent);
+                }
+                else{
+
+                    login_information_pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
+                    login_infromation_editor = login_information_pref.edit();
+                    login_infromation_editor.putString("login_type" , "kakao");
+                    login_infromation_editor.putString("login_type" , Email);
+                    login_infromation_editor.commit();
+
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);//  성공하고 다음페이지로 넘어감
+                    finish();
+                }
             }
             else{
                 Log.e("Login Activitiy", "Naver login 되어있음.");
@@ -607,7 +668,7 @@ public class LoginActivity extends AppCompatActivity  {
 
 
         // 사용자 정보 요청
-        public void requestMe() {
+        public void kakao_user_information_request() {
             UserManagement.getInstance()
                     .me(new MeV2ResponseCallback() {
                         @Override
@@ -627,11 +688,11 @@ public class LoginActivity extends AppCompatActivity  {
                             UserAccount kakaoAccount = result.getKakaoAccount();
                             System.out.println("kakaoAccount.emailNeedsAgreement()" + kakaoAccount.emailNeedsAgreement());
                             if (kakaoAccount != null) {
-                                String email = kakaoAccount.getEmail();
+                                Email = kakaoAccount.getEmail();
                                 Log.e("KAKAO_API", "kakaAccount null 아님");
 
-                                if (email != null) {
-                                    Log.e("KAKAO_API", "email: " + email);
+                                if (Email != null) {
+                                    Log.e("KAKAO_API", "email: " + Email);
 
                                 } else if (kakaoAccount.emailNeedsAgreement() == OptionalBoolean.TRUE) {
                                     Log.e("kakao Profile", "email 획득 가능");
@@ -663,7 +724,7 @@ public class LoginActivity extends AppCompatActivity  {
                                         @Override
                                         protected void doInBackground(String... urls){//background로 돌아갈것
                                             try {
-                                                sendProfile("kakao", name, age, email, gender,birthday);
+                                                sendProfile("kakao", name, age, Email, gender,birthday);
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             } catch (IOException e) {
@@ -680,8 +741,6 @@ public class LoginActivity extends AppCompatActivity  {
 
                                 } else if (kakaoAccount.profileNeedsAgreement() == OptionalBoolean.TRUE) {
                                     // 동의 요청 후 프로필 정보 획득 가능
-
-
 
                                 } else {
                                     // 프로필 획득 불가

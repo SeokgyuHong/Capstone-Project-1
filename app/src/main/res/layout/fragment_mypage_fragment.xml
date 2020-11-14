@@ -98,7 +98,7 @@
                 android:clickable="true"
                 android:paddingLeft="30dp"
                 android:paddingTop="10dp"
-                android:text="비밀번호 변경" />
+                android:text="비밀번호 재설정" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/account_delete"

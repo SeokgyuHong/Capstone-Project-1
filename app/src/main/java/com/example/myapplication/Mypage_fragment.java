@@ -12,6 +12,9 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -57,7 +60,14 @@ public class Mypage_fragment extends Fragment {
     private String mParam2;
 
     private String login_type;
-    private SharedPreferences pref;
+    private String first_kakao_login;
+    private String first_naver_login;
+    private SharedPreferences login_information_pref;
+    private SharedPreferences login_log_pref;
+
+    private SharedPreferences.Editor login_infromation_editor;
+    private SharedPreferences.Editor login_log_editor;
+
     private static Context mcontext;
     private static Activity mActivity;
     private static Mypage_fragment Instance;
@@ -111,10 +121,18 @@ public class Mypage_fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-       View v = inflater.inflate(R.layout.fragment_mypage_fragment, container, false);
+        View v = inflater.inflate(R.layout.fragment_mypage_fragment, container, false);
         mOAuthLoginModule = OAuthLogin.getInstance();
-        pref = getActivity().getSharedPreferences("login_information", Context.MODE_PRIVATE);
-        login_type = pref.getString("type", "111111");
+        //유저 정보가 담겨있는 shared preference
+        login_information_pref = getActivity().getSharedPreferences("login_information", Context.MODE_PRIVATE);
+        login_infromation_editor = login_information_pref.edit();
+        login_type = login_information_pref.getString("login_type", "null");
+        //SNS 로그인시에 첫 로그인인지 아닌지 확인하기 위한 preference
+        login_log_pref = getActivity().getSharedPreferences("SNS_login_log", Context.MODE_PRIVATE);
+        login_log_editor = login_log_pref.edit();
+
+        //first_kakao_login = login_log_pref.getString("first_kakao_login","true");
+        //first_naver_login = login_log_pref.getString("first_naver_login","true");
 
         //mcontext = container.getContext();
 
@@ -133,6 +151,10 @@ public class Mypage_fragment extends Fragment {
                             .requestLogout(new LogoutResponseCallback() {
                                 @Override
                                 public void onCompleteLogout() {
+                                    login_infromation_editor.clear();
+                                    //editor.putString("first_login", "false");
+                                    login_infromation_editor.commit();
+
                                     Intent intent = new Intent(getActivity(), LoginActivity.class);
                                     startActivity(intent);
                                     getActivity().finish();
@@ -147,6 +169,10 @@ public class Mypage_fragment extends Fragment {
                     if(!loginState.equals("NEED_LOGIN")){
                         Log.e("Main Logout", "로그아웃 성공");
                         mOAuthLogin.logout(getActivity());
+
+                        login_infromation_editor.clear();
+                        login_infromation_editor.commit();
+
                         Intent intent = new Intent(getActivity(), LoginActivity.class);
                         startActivity(intent);
                         getActivity().finish();
@@ -190,9 +216,15 @@ public class Mypage_fragment extends Fragment {
                                         @Override
                                         public void onSuccess(Long result) {// 카카오 회원탈퇴 성공시
                                             Log.i("KAKAO_API", "연결 끊기 성공. id: " + result);
+                                            login_infromation_editor.clear();
+                                            login_infromation_editor.commit();
+
+                                            login_log_editor.remove("first_kakao_login");
+                                            login_log_editor.commit();
                                             Intent intent = new Intent(getActivity(), LoginActivity.class);
                                             startActivity(intent);
                                             getActivity().finish();
+
                                             Toast.makeText(getActivity(), "계정이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
                                         }
                                     });
@@ -218,10 +250,14 @@ public class Mypage_fragment extends Fragment {
                                         isSuccessDeleteToken = mOAuthLoginModule.logoutAndDeleteToken(LoginActivity.mContext);
                                         if(isSuccessDeleteToken) {
                                             Intent intent = new Intent(getActivity(), LoginActivity.class);
-
                                             startActivity(intent);
                                             getActivity().finish();
 
+                                            login_infromation_editor.clear();
+                                            login_infromation_editor.commit();
+
+                                            login_log_editor.remove("first_naver_login");
+                                            login_log_editor.commit();
                                         }
                                     }
                                 }
@@ -229,6 +265,10 @@ public class Mypage_fragment extends Fragment {
                                 @Override
                                 protected void onPostExecute() {
                                     if(isSuccessDeleteToken) {
+                                        SharedPreferences pref = getActivity().getSharedPreferences("NaverOAuthLoginPreferenceData", Activity.MODE_PRIVATE);
+                                        SharedPreferences.Editor editor = pref.edit();
+                                        editor.putString("first_login" , "true");
+                                        editor.commit();
                                         Toast.makeText(getActivity(), "계정이 삭제되었습니다.", Toast.LENGTH_SHORT).show();
                                     }
                                 }
@@ -243,6 +283,20 @@ public class Mypage_fragment extends Fragment {
         AlertDialog msgDlg = msgBuilder.create(); msgDlg.show();
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+        //inflater.inflate(R.menu.);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case android.R.id.home:
+                getActivity().finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     class Account_delete_class implements View.OnClickListener{
 

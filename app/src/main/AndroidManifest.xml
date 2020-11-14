@@ -16,7 +16,6 @@
         tools:ignore="MissingClass">
         <activity android:name=".delete_accout_activity"></activity>
         <activity android:name=".account_register_complete" />
-        <activity android:name=".additional_inform_register" />
         <activity android:name=".kakaoactivity" />
 
         <meta-data
@@ -67,6 +66,10 @@
         <activity
             android:name=".RegisterActivity"
             android:parentActivityName=".ui.login.LoginActivity" />
+
+        <activity
+            android:name=".additional_inform_register"
+            android:parentActivityName=".RegisterActivity" />
 
         <service android:name=".ui.login.LoginActivity">
             <intent-filter>

@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -33,9 +34,11 @@ import android.widget.Toast;
 
 import com.example.myapplication.ui.login.LoginActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.textview.MaterialTextView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.RemoteMessage;
@@ -74,6 +77,7 @@ import retrofit2.Response;
 import static androidx.constraintlayout.widget.ConstraintProperties.PARENT_ID;
 
 public class MainActivity<pirvate> extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, FragmentCallback{
+
     private String [] notepad_title = new String[100];
     private String [] notepad_content = new String[100];
     private String[] temp = new String[2];
@@ -91,12 +95,15 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
     private Mypage_fragment mypage_fragment;
 
     DrawerLayout drawer;
-    Toolbar toolbar;
 
     String Title_filename = "title.txt";
     String Content_filename = "content.txt";
     private ItemTouchHelper helper;
     ArrayList<SampleData> notepadDataList = new ArrayList<>();
+
+    private MaterialToolbar toolbar;
+    private ActionBar actionBar;
+    private MaterialTextView toolbartext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +115,19 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
         sensor_fragment = new Sensor_fragment();
         mypage_fragment = new Mypage_fragment();
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.container , home_fragment).commit();
+        /*홈 fragment로 내용 채워줌*/
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, home_fragment).commit();
+
+        toolbar = (MaterialToolbar)findViewById(R.id.MainActiviy_toolbar);
+        setSupportActionBar(toolbar);
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
+        toolbartext = (MaterialTextView)findViewById(R.id.toolbar_textview);
+
+        //actionBar.setDisplayHomeAsUpEnabled(true); 뒤로가기 버튼, 현재 흰색이라서 생성해도 보이지는 않음 필요는없
+
+        //getSupportFragmentManager().beginTransaction().replace(R.id.container , home_fragment).commit();
 
         BottomNavigationView bottomNavigation = findViewById(R.id.bottom_navigation);
         bottomNavigation.setOnNavigationItemSelectedListener(
@@ -120,14 +139,17 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
                             case R.id.tab1:
                                 //Toast.makeText(getApplicationContext(), "1", Toast.LENGTH_SHORT).show();
                                 getSupportFragmentManager().beginTransaction().replace(R.id.container, home_fragment).commit();
+                                toolbartext.setText("홈");
                                 return true;
                             case R.id.tab2 :
                                 //Toast.makeText(getApplicationContext(), "2", Toast.LENGTH_SHORT).show();
                                 getSupportFragmentManager().beginTransaction().replace(R.id.container, sensor_fragment).commit();
+                                toolbartext.setText("센서");
                                 return true;
                             case R.id.tab3 :
                                 //Toast.makeText(getApplicationContext(), "3", Toast.LENGTH_SHORT).show();
                                 getSupportFragmentManager().beginTransaction().replace(R.id.container, mypage_fragment).commit();
+                                toolbartext.setText("마이 페이지");
                                 return true;
                         }
                         return false;
@@ -135,6 +157,8 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
                 }
         );
         Navinit(); // navigation drawer 초기화
+
+
         //getHashKey(); // fire base 해쉬 값 받아오기
 
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( MainActivity.this,  new OnSuccessListener<InstanceIdResult>() {
@@ -367,17 +391,17 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
        // notepadDataList.add(new SampleData("노준석", 1));
     }
     public void Navinit(){
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+//        toolbar = findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+//
+//        drawer = findViewById(R.id.drawer_layout);
+//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+//        drawer.addDrawerListener(toggle);
+//        toggle.syncState();
+//
+//        NavigationView navigationView = findViewById(R.id.nav_view);
+//        navigationView.setNavigationItemSelectedListener(this);
     }
 
    /* @Override
@@ -483,6 +507,16 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
             만약에 메뉴 클릭시 fragment 넣을거면 이걸로함.
          */
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

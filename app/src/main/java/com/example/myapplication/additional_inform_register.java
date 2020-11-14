@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -8,10 +9,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.google.android.material.appbar.MaterialToolbar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,13 +32,14 @@ import java.net.URL;
 
 public class additional_inform_register extends AppCompatActivity {
 
-    private String ip = "http://10.0.2.2:3000/account_create";
+    private String ip = "http://10.0.2.2:3000/";
     private EditText Institution_name_view;
     private EditText Institution_phone_number_view;
     private EditText Institution_street_name_address_view;
     private EditText Institution_detail_address_view;
     private Button confirm_button;
 
+    private String login_type;
     private String email;
     private String pw;
 
@@ -45,6 +50,9 @@ public class additional_inform_register extends AppCompatActivity {
     private String address;
 
     private String Account_create_result;
+
+    private MaterialToolbar toolbar;
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +65,16 @@ public class additional_inform_register extends AppCompatActivity {
         Institution_detail_address_view = (EditText) findViewById(R.id.institution_detail_address);
         confirm_button = (Button)findViewById(R.id.confirm_button2);
 
+        toolbar = (MaterialToolbar)findViewById(R.id.register_toolbar_required_information);
+        setSupportActionBar(toolbar);
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         Intent intent = getIntent();
 
+        login_type = intent.getStringExtra("login_type");
         email = intent.getStringExtra("email");
 
         confirm_button.setOnClickListener(new View.OnClickListener() {
@@ -88,11 +104,18 @@ public class additional_inform_register extends AppCompatActivity {
                             JSONObject sendObject = new JSONObject();
                             BufferedReader reader = null;
 
-                            URL url = new URL(urls[0]);
+                            if(login_type.equals("general")){
+                                ip = urls[0]+"general_account_create";
+                            }
+                            else{
+                                ip = urls[0]+"sns_account_create";
+                            }
+                            URL url = new URL(ip);
                             con = (HttpURLConnection) url.openConnection();
-
+                            if(login_type.equals("general")){
+                                sendObject.put("pw",intent.getStringExtra("pw"));
+                            }
                             sendObject.put("email",email);
-                            sendObject.put("pw",intent.getStringExtra("pw"));
                             sendObject.put("institution_name", institution_name);
                             sendObject.put("institution_phone_number",institution_phone_number);
                             sendObject.put("address",address);
@@ -129,10 +152,10 @@ public class additional_inform_register extends AppCompatActivity {
                         @Override
                         protected void onPostExecute() {
                             if(Account_create_result.equals("true")){
-                                SharedPreferences pref = getSharedPreferences("login_inform", Activity.MODE_PRIVATE);
+                                SharedPreferences pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = pref.edit();
                                 editor.putString("login_email" , email);
-                                editor.putString("login_type" , "general");
+                                editor.putString("login_type" , login_type);
                                 editor.commit();
 
                                 Intent intent = new Intent(additional_inform_register.this, account_register_complete.class);
@@ -149,5 +172,15 @@ public class additional_inform_register extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

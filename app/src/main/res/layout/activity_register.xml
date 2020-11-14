@@ -15,17 +15,27 @@
         app:layout_constraintTop_toTopOf="parent"
         android:orientation="vertical">
 
-        <com.google.android.material.textview.MaterialTextView
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/register_toolbar_required_information"
             android:layout_width="match_parent"
             android:layout_height="58dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/materialTextView"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:text="회원가입"
-            android:gravity="center"/>
+            >
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="58dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/materialTextView"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:text="회원가입"
+                android:gravity="center"
+                android:layout_gravity ="center"
+                />
+        </com.google.android.material.appbar.MaterialToolbar>
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -64,7 +74,7 @@
 
     <LinearLayout
         android:layout_width="360dp"
-        android:layout_height="302dp"
+        android:layout_height="380dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="16dp"
@@ -80,7 +90,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="302dp"
+            android:layout_height="380dp"
 
             android:orientation="vertical">
 
@@ -92,7 +102,7 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/email"
-                    android:layout_width="250dp"
+                    android:layout_width="225dp"
                     android:layout_height="58dp"
                     android:gravity="left|center"
                     android:hint="아이디 (이메일 주소)"
@@ -104,7 +114,7 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/EmailCheck"
                     android:layout_marginLeft="5dp"
-                    android:layout_width="100dp"
+                    android:layout_width="125dp"
                     android:layout_height="63dp"
                     android:gravity="center|center"
                     android:text="중복확인"
@@ -112,6 +122,73 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/email_security_code_layout"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:orientation="vertical"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:visibility="gone"
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="65dp"
+                    android:orientation="horizontal"
+
+                    >
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/email_security_code"
+                    android:layout_width="180dp"
+                    android:layout_height="58dp"
+                    android:gravity="left|center"
+                    android:hint="인증번호 입력"
+                    android:background="@drawable/register_edge1"
+                    android:paddingLeft="13sp"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/email_security_timer"
+                    android:layout_width="45dp"
+                    android:layout_height="58dp"
+                    android:gravity="center"
+                    android:text="3:00"
+                    android:textColor="@color/login_register"
+                    android:background="@drawable/register_edge2"
+                    android:textSize="15sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/email_security_code_confirm_button"
+                    android:layout_width="125dp"
+                    android:layout_height="63dp"
+                    android:layout_marginLeft="5dp"
+                    android:gravity="center|center"
+                    android:text="인증번호 확인"
+                    android:padding="0dp"
+                    android:textSize="13sp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/email_security_inform_text"
+                        android:layout_width="250dp"
+                        android:layout_height="wrap_content"
+                        android:text="3분 이내로 인증번호(6자리)를 입력해 주세요."
+                        android:paddingLeft="6dp"
+                        android:textSize="13sp"/>
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/email_security_code_send"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:text="인증번호 전송"
+                        android:paddingLeft="20dp"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+            </LinearLayout>
 
 
             <LinearLayout

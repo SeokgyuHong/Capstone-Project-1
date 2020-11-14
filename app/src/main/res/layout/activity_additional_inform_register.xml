@@ -16,17 +16,26 @@
 
         android:orientation="vertical">
 
-        <com.google.android.material.textview.MaterialTextView
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/register_toolbar_required_information"
             android:layout_width="match_parent"
             android:layout_height="58dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/materialTextView"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:text="회원가입"
-            android:gravity="center"/>
+            >
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="58dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/materialTextView"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:text="회원가입"
+                android:gravity="center"
+                android:layout_gravity ="center"
+                />
+        </com.google.android.material.appbar.MaterialToolbar>
 
         <LinearLayout
             android:layout_width="match_parent"

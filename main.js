@@ -11,7 +11,7 @@ const {send_fcm} = require('./send_fcm');
 
 
 const normal_sign_up = require('./sign_up/normal_sign_up'); // 일반계정 회원가입 모듈
-
+const social_sign_up = require('./sign_up/social_sign_up'); //소셜계정　회원가입 모듈
 const db_sql = require('./db_sql');
 const db_sql_exam2=require('./db_sql_exam2');
 
@@ -36,12 +36,14 @@ app.post('/alarm_data_request',db_sql.sql_alarm_data_request);
 
 
 //일반계정 회원가입
-app.post('/id_duplication_check',normal_sign_up.id_duplication_check);
-app.post('/temp_pw_create',normal_sign_up.temp_pw_create);
-app.post('/temp_pw_check',normal_sign_up.temp_pw_check);
-app.post('/normal_sign_up',normal_sign_up.normal_sign_up);
+app.post('/id_duplication_check',normal_sign_up.id_duplication_check); //아이디 중복여부 체크
+app.post('/temp_pw_create',normal_sign_up.temp_pw_create); //임시비밀번호 생성
+app.post('/temp_pw_check',normal_sign_up.temp_pw_check); //임시비밀번호 체크
+app.post('/normal_sign_up',normal_sign_up.normal_sign_up); //일반계정 회원가입
 
-
+//소셜계정 회원가입
+app.post('/id_duplication_check',normal_sign_up.id_duplication_check); //소설계정 회원가입 
+app.post('/social_sign_up',social_sign_up.social_sign_up);
 
 app.listen(8080, function() {
     console.log('Example app listening on port 8080!')

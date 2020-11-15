@@ -32,7 +32,7 @@ import java.net.URL;
 
 public class additional_inform_register extends AppCompatActivity {
 
-    private String ip = "http://10.0.2.2:3000/";
+    private String ip;
     private EditText Institution_name_view;
     private EditText Institution_phone_number_view;
     private EditText Institution_street_name_address_view;
@@ -58,6 +58,8 @@ public class additional_inform_register extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_additional_inform_register);
+
+        ip = getResources().getString(R.string.server_ip);
 
         Institution_name_view = (EditText) findViewById(R.id.institution_name);
         Institution_phone_number_view = (EditText) findViewById(R.id.institution_phone_number);
@@ -95,7 +97,7 @@ public class additional_inform_register extends AppCompatActivity {
                     new ThreadTask<Object>() {
                         @Override
                         protected void onPreExecute() {// excute 전에
-                            Log.e("ip_check", R.string.ip+"/account_create");
+                            Log.e("ip_check", ip+"/account_create");
                         }
 
                         @Override
@@ -105,10 +107,10 @@ public class additional_inform_register extends AppCompatActivity {
                             BufferedReader reader = null;
 
                             if(login_type.equals("general")){
-                                ip = urls[0]+"general_account_create";
+                                ip = urls[0]+"/general_account_create";
                             }
                             else{
-                                ip = urls[0]+"sns_account_create";
+                                ip = urls[0]+"/sns_account_create";
                             }
                             URL url = new URL(ip);
                             con = (HttpURLConnection) url.openConnection();
@@ -146,6 +148,7 @@ public class additional_inform_register extends AppCompatActivity {
                                 buffer.append(line);
                             }
                             Account_create_result = buffer.toString();
+                            Log.e("additional_inform_register",Account_create_result);
 
                         }
 
@@ -154,7 +157,7 @@ public class additional_inform_register extends AppCompatActivity {
                             if(Account_create_result.equals("true")){
                                 SharedPreferences pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = pref.edit();
-                                editor.putString("login_email" , email);
+                                editor.putString("email" , email);
                                 editor.putString("login_type" , login_type);
                                 editor.commit();
 

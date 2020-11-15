@@ -93,7 +93,7 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
     private Home_fragment home_fragment;
     private Sensor_fragment sensor_fragment;
     private Mypage_fragment mypage_fragment;
-
+    private String ip;
     DrawerLayout drawer;
 
     String Title_filename = "title.txt";
@@ -114,6 +114,8 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
         home_fragment = new Home_fragment();
         sensor_fragment = new Sensor_fragment();
         mypage_fragment = new Mypage_fragment();
+
+        ip = getString(R.string.server_ip);
 
         /*홈 fragment로 내용 채워줌*/
         getSupportFragmentManager().beginTransaction().replace(R.id.container, home_fragment).commit();
@@ -259,7 +261,8 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
                     try{
                         //URL url = new URL("http://10.0.2.2:3000/post");
 
-                        URL url = new URL(urls[0]);
+                        URL url = new URL(urls[0]+"/post");
+                        Log.e("Mainactivity", urls[0]+"/post");
                         con = (HttpURLConnection) url.openConnection();
 
                         con.setRequestMethod("POST");//POST방식으로 보냄
@@ -317,7 +320,8 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
             protected void onPostExecute() {
 
             }
-        }.execute("http://10.0.2.2:3000/post");
+        }.execute(ip);
+
     }
     public void wrtieToFile(){
 

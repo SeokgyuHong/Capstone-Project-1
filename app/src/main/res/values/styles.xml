@@ -16,7 +16,13 @@
     </style>
 
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowBackground">@drawable/splash4</item>
+        <item name="android:windowBackground">@drawable/splash5</item>
+    </style>
+
+    <style name="MainTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowBackground">@drawable/main_background_color</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

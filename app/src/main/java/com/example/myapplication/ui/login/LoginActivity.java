@@ -13,6 +13,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -132,10 +133,10 @@ public class LoginActivity extends AppCompatActivity  {
     public static Context mContext;
     private String apiURL;
     private String Naver_profile_ReadBody;
-    private String Email;
+    private static String Email;
     private String first_naver_login;
     private String naver_access_token_check;
-
+    private String ip;
     private SharedPreferences login_information_pref;
     private SharedPreferences login_log_pref;
 
@@ -160,6 +161,8 @@ public class LoginActivity extends AppCompatActivity  {
                 .get(LoginViewModel.class);
 
         mContext = this;
+        ip = getString(R.string.server_ip);
+        //Toast.makeText(getApplication(),ip+"/naver", Toast.LENGTH_SHORT).show();
         //session 값에서 어떤 로그인할지 정하기.. ?
         getHashKey();
         btn_custom_login = (Button) findViewById(R.id.btn_kakao_login_custom);
@@ -188,8 +191,6 @@ public class LoginActivity extends AppCompatActivity  {
             @Override
             public void run(boolean success) {
                     if (success) {// naver access이 있다면
-
-
                         String accessToken = mOAuthLoginModule.getAccessToken(mContext);
                         String refreshToken = mOAuthLoginModule.getRefreshToken(mContext);
                         Log.e("Token accessToken", accessToken);
@@ -234,6 +235,7 @@ public class LoginActivity extends AppCompatActivity  {
                             }
                             else if(first_naver_login.equals("false")){
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                login_infromation_editor.putString("email" , Email);
                                 startActivity(intent);
                                 finish();
                             }
@@ -359,6 +361,7 @@ public class LoginActivity extends AppCompatActivity  {
                         passwordEditText.getText().toString());
             }
         };
+
         usernameEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -475,7 +478,7 @@ public class LoginActivity extends AppCompatActivity  {
         JSONObject sendObject = new JSONObject();
         BufferedReader reader = null;
 
-        URL url = new URL("http://10.0.2.2:3000/"+social_type);
+        URL url = new URL(ip+"/"+social_type);
         Log.e("SendProfile : ", social_type);
         con = (HttpURLConnection) url.openConnection();
 
@@ -562,7 +565,6 @@ public class LoginActivity extends AppCompatActivity  {
 
         super.onActivityResult(requestCode, resultCode, data);
     }
-
     private void getHashKey(){
         PackageInfo packageInfo = null;
         try {
@@ -606,7 +608,6 @@ public class LoginActivity extends AppCompatActivity  {
     }
 
     public class SessionCallback implements ISessionCallback { // 카카오 로그인
-
         private Context mContext;
         public SessionCallback(Context mContext){
             this.mContext = mContext;
@@ -615,8 +616,8 @@ public class LoginActivity extends AppCompatActivity  {
         @Override
         public void onSessionOpened() {
             //System.out.println("tlqkfktkqtkqktqk");
-            if(OAuthLoginState.NEED_LOGIN.equals(OAuthLogin.getInstance().getState(mContext))) {
-                Log.e("Login Activitiy", "Naver login 안되어있음.");
+                if(OAuthLoginState.NEED_LOGIN.equals(OAuthLogin.getInstance().getState(mContext))) {
+                    Log.e("Login Activitiy", "Naver login 안되어있음.");
                 getAgree();
                 kakao_user_information_request();
 
@@ -625,7 +626,10 @@ public class LoginActivity extends AppCompatActivity  {
 
                 login_log_editor = login_log_pref.edit();
                 //login_log_editor.putString("login_type" , "kakao");
-                //login_log_editor.commit();
+                //login_log_editor.commit();=
+                //Log.e("asdfasdf", Email);
+                //login_infromation_editor.putString("email" , Email);
+
 
                 if(first_kakao_login.equals("true")){
                     Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
@@ -640,12 +644,6 @@ public class LoginActivity extends AppCompatActivity  {
                     startActivity(intent);
                 }
                 else{
-
-                    login_information_pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
-                    login_infromation_editor = login_information_pref.edit();
-                    login_infromation_editor.putString("login_type" , "kakao");
-                    login_infromation_editor.putString("login_type" , Email);
-                    login_infromation_editor.commit();
 
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);//  성공하고 다음페이지로 넘어감
@@ -687,31 +685,35 @@ public class LoginActivity extends AppCompatActivity  {
 
                             UserAccount kakaoAccount = result.getKakaoAccount();
                             System.out.println("kakaoAccount.emailNeedsAgreement()" + kakaoAccount.emailNeedsAgreement());
-                            if (kakaoAccount != null) {
-                                Email = kakaoAccount.getEmail();
-                                Log.e("KAKAO_API", "kakaAccount null 아님");
 
+                            if (kakaoAccount != null) {
+                                setEmail(kakaoAccount.getEmail());
+                                Log.e("KAKAO_API", "kakaAccount null 아님");
+                                Log.e("KAKAO_API", Email);
                                 if (Email != null) {
                                     Log.e("KAKAO_API", "email: " + Email);
-
                                 } else if (kakaoAccount.emailNeedsAgreement() == OptionalBoolean.TRUE) {
                                     Log.e("kakao Profile", "email 획득 가능");
                                     // 동의 요청 후 이메일 획득 가능
                                     // 단, 선택 동의로 설정되어 있다면 서비스 이용 시나리오 상에서 반드시 필요한 경우에만 요청해야 합니다.
-
                                 } else {
                                     // 이메일 획득 불가
                                     Log.e("kakao Profile", "email 획득 불가");
                                 }
-
                                 // 프로필
                                 Profile profile = kakaoAccount.getProfile();
-
                                 if (profile != null) {
                                     String age = kakaoAccount.getAgeRange().getValue();
                                     String birthday = kakaoAccount.getBirthday();
                                     String gender =kakaoAccount.getGender().getValue();
                                     String name = kakaoAccount.getProfile().getNickname();
+
+                                    login_information_pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
+                                    login_infromation_editor = login_information_pref.edit();
+                                    login_infromation_editor.putString("login_type" , "kakao");
+
+                                    login_infromation_editor.putString("email" , Email);
+                                    login_infromation_editor.commit();
 
                                     new ThreadTask<Object>() {
                                         String ApiURL = apiURL;
@@ -736,7 +738,7 @@ public class LoginActivity extends AppCompatActivity  {
                                         protected void onPostExecute() {
 
                                         }
-                                    }.execute("http://10.0.2.2:3000/");
+                                    }.execute(ip);
 
 
                                 } else if (kakaoAccount.profileNeedsAgreement() == OptionalBoolean.TRUE) {
@@ -752,5 +754,8 @@ public class LoginActivity extends AppCompatActivity  {
 
         }
 
+        public void setEmail(String email) {
+            Email = email;
+        }
     }
 }

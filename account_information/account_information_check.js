@@ -31,7 +31,7 @@ module.exports.account_information_check = (req,res)=>{
             
         }).catch((err)=>{
             console.log(err)
-            res.send({'key':3,'err_code':err.code}); //잘못된 계정정보 전달
+            res.send({'key':0,'err_code':err.code}); //잘못된 계정정보 전달
         })
         conn.release();
     }).catch((err)=>{

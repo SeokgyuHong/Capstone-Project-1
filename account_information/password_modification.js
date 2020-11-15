@@ -19,7 +19,7 @@ module.exports.user_type_check = (req,res)=>{
             }
         }).catch((err)=>{
             console.log(err)
-            res.send({'key':3,'err_code':err.code}); //쿼리문 에러
+            res.send({'key':0,'err_code':err.code}); //쿼리문 에러
         })
         conn.release();
     }).catch((err)=>{

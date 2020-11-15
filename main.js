@@ -18,11 +18,13 @@ const db_sql_exam2=require('./db_sql_exam2');
 const normal_sign_in = require('./sign_in/normal_sign_in'); //일반계정 로그인
 const social_sign_in = require('./sign_in/social_sign_in'); //소셜계정 로그인
 
+const sign_out = require('./sign_out/sign_out'); //로그아웃
 
 //계정정보체크
-const account_information_check = require('./account_information/account_information_check');
-const account_information_modification = require('./account_information/account_information_modification');
-const password_modification = require('./account_information/password_modification');
+const account_deletion = require('./account_information/account_deletion'); //계정삭제
+const account_information_check = require('./account_information/account_information_check'); //계정 정보 체크
+const account_information_modification = require('./account_information/account_information_modification'); //계정 정보 수정
+const password_modification = require('./account_information/password_modification'); //비밀번호 변경
 
 app.use(bodyparser.json())
 app.use(express.urlencoded({extended:false}))
@@ -59,6 +61,12 @@ app.post('/normal_sign_in',normal_sign_in.normal_sign_in); //일반계정 로그
 
 //소셜계정 로그인
 app.post('/social_sign_in',social_sign_in.social_sign_in); //소셜계정 로그인
+
+//로그아웃
+app.post('/sign_out',sign_out.sign_out);
+
+//계정삭제
+app.post('/account_deletion',account_deletion.account_deletion);
 
 //계정정보 체크
 app.post('/account_information_check',account_information_check.account_information_check);

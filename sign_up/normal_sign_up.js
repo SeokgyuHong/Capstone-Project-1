@@ -63,18 +63,37 @@ module.exports.temp_pw_create = (req,res)=>{
     transporter.sendMail(mailOption).then((info)=>{ //메일전송
         console.log('Email sent: ' + info.response);
         pool.getConnection().then((conn)=>{
-            conn.query(`insert into Temp_user (email_address,temp_password)
-            values('${email_address}','${temp_password}')`).then((data)=>{
-                res.send({'key':3}) // 임시비밀번호 생성완료
-            }).catch((err)=>{
+            conn.query(`select email_address from Temp_user 
+            where email_address='${email_address}'`).then((data)=>{
+                if(data[0]===undefined)
+                {
+                conn.query(`insert into Temp_user (email_address,temp_password)
+                values('${email_address}','${temp_password}')`).then((data)=>{
+                    res.send({'key':3}) // 임시비밀번호 생성완료
+                }).catch((err)=>{
+                    console.log('임시비밀번호생성시에러')
+                    console.log(err.code)
+                    res.send({'key':0,'err_code':err.code});
+                })
+                }
+                else
+                {
+                conn.query(`update Temp_user set temp_password = '${temp_password}' 
+                where email_address='${email_address}'`).then((data)=>{
+                    res.send({'key':3}) // 임시비밀번호 생성완료
+                }).catch((err)=>{
+                    console.log('임시비밀번호생성시에러')
+                    console.log(err.code)
+                    res.send({'key':0,'err_code':err.code});
+                })
+                }
+            conn.release();
+             }).catch((err)=>{
+                console.log('임시비밀번호생성시에러')
                 console.log(err.code)
                 res.send({'key':0,'err_code':err.code});
             })
-            conn.release();
-        }).catch((err)=>{
-            console.log(err.code)
-            res.send({'key':0,'err_code':err.code});
-        })
+    })
     }).catch((err)=>{
         if(err)
         {

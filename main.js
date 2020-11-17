@@ -51,10 +51,11 @@ app.post('/temp_pw_create',normal_sign_up.temp_pw_create); //임시비밀번호 
 app.post('/temp_pw_check',normal_sign_up.temp_pw_check); //임시비밀번호 체크
 app.post('/normal_sign_up',normal_sign_up.normal_sign_up); //일반계정 회원가입
 
-//소셜계정 회원가입 & 로그인
+//소셜계정 회원가입
 //app.post('/id_duplication_check',normal_sign_up.id_duplication_check); //소설계정 회원가입 
 app.post('/social_sign_up',social_sign_up.social_sign_up);
-//소셜계정 추가정보입력 아래 라우터 바꿔야함
+
+
 
 app.post('/social_sign_in',social_sign_in.social_sign_in); //소셜계정 로그인
 

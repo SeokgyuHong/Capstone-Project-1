@@ -1,6 +1,6 @@
 //프로젝트 실사용 로그인 
 //일반회원가입 구현 완료
-const {insert} = require('../db_sql.js');
+//const {insert} = require('../db_sql.js');
 const {pool} = require('../secret_info/db_connect');
 const info = require('../secret_info/db_loginfo')
 const {send_mail} = require('../send_mail');
@@ -116,6 +116,10 @@ module.exports.temp_pw_check = (req,res)=>{
             if (data[0]['temp_password']==temp_password)
             {
                 res.send({'key':1})//임시비밀번호 일치
+            }
+            else
+            {
+                res.send({'key':2}) // 임시비밀번호가 다름
             }
         }).catch((err)=>{
             console.log(err.code)

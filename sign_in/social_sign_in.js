@@ -1,13 +1,11 @@
 //프로젝트 실사용 social 로그인
-const {insert} = require('../db_sql.js');
+//const {insert} = require('../db_sql.js');
 const {pool} = require('../secret_info/db_connect');
 const info = require('../secret_info/db_loginfo')
 const {send_mail} = require('../send_mail');
 const format_check = require('../format_check');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
-const { resolveNaptr } = require('dns');
-
 
 
 
@@ -25,6 +23,7 @@ module.exports.social_sign_in = (req,res)=>{
     pool.getConnection().then((conn)=>{
         conn.query(`select email_address,user_type from User
         where email_address='${email_address}'`).then((data)=>{
+            //console.log('Test용 '+data[0]['email_address']+data[0]['user_type']);
             if(data[0]===undefined) //등록된것이없으면 아무것도없다면
             {
                 res.send({'key':2}) //추가정보입력란으로 넘기기

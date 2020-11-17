@@ -1,0 +1,9 @@
+{
+  "host":"jongp.cxnxil3u3tnt.us-east-1.rds.amazonaws.com",
+  "post":"3306",
+  "user":"jongp2",
+  "password":"1234",
+  "database":"jongpdb",
+  "dateStrings":"date",
+  "connectionLimit":30
+}

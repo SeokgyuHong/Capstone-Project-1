@@ -1,4 +1,5 @@
 //프로젝트 실사용 로그인 
+//일반회원가입 구현 완료
 const {insert} = require('../db_sql.js');
 const {pool} = require('../secret_info/db_connect');
 const info = require('../secret_info/db_loginfo')

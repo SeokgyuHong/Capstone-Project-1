@@ -4,9 +4,10 @@ const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
 const bodyparser = require('body-parser');
-
 const {send_mail}= require('./send_mail');
 const {send_fcm} = require('./fcm/send_fcm');
+const session = require('express-session');
+const session_info = require('./secret_info/session_info'); //세션암호화든 정보 저장
 //var {save_login_info} = require('./login');
 //fcm 정보
 const fcm_token_save = require('./fcm/fcm_token_save');
@@ -27,13 +28,24 @@ const account_information_check = require('./account_information/account_informa
 const account_information_modification = require('./account_information/account_information_modification'); //계정 정보 수정
 const password_modification = require('./account_information/password_modification'); //비밀번호 변경
 
-app.use(bodyparser.json())
+session_json = session_info.session_info; //세션정보
+app.use(bodyparser.json()) //미들웨어 
 app.use(express.urlencoded({extended:false}))
+app.use(session(session_json));
+
+
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html');
 
 app.get('/',(req,res)=>{
+  console.log(__dirname+'/html/daum.html');
+  let file_name = __dirname+'/html/daum.html';
+  res.render(file_name);
 });
 // app.post('/nodemailerTest',send_mail);
 app.post('/notification',send_fcm);
+
+
 
 // app.post('/naver',db_sql.sql_insert_naver);
 // app.post('/kakao',db_sql.sql_insert_kakao);

@@ -3,6 +3,7 @@ const app = express();
 const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
+const socketIO = require('socket.io');
 const bodyparser = require('body-parser');
 const {send_mail}= require('./send_mail');
 const {send_fcm} = require('./fcm/send_fcm');
@@ -22,11 +23,17 @@ const social_sign_in = require('./sign_in/social_sign_in'); //소셜계정 로�
 
 const sign_out = require('./sign_out/sign_out'); //로그아웃
 
+
 //계정정보체크
 const account_deletion = require('./account_information/account_deletion'); //계정삭제
 const account_information_check = require('./account_information/account_information_check'); //계정 정보 체크
 const account_information_modification = require('./account_information/account_information_modification'); //계정 정보 수정
 const password_modification = require('./account_information/password_modification'); //비밀번호 변경
+
+
+
+//From 센서 To 클라이언트
+const socket = require('./socket/socket'); //웹소켓을 통해 전송 
 
 session_json = session_info.session_info; //세션정보
 app.use(bodyparser.json()) //미들웨어 
@@ -38,7 +45,6 @@ app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
 app.get('/',(req,res)=>{
-  console.log(__dirname+'/html/daum.html');
   let file_name = __dirname+'/html/daum.html';
   res.render(file_name);
 });
@@ -94,9 +100,12 @@ app.post('/user_type_check',password_modification.user_type_check); //유저타�
 app.post('/password_modification',password_modification.password_modification);//패스워드변경
 
 
-
-app.listen(8080, function() {
+//소켓 테스트중
+app.post('/data_from_sensor',socket.data_from_sensor);
+const server = app.listen(8080, function() {
     console.log('Example app listening on port 8080!')
   });
 
-
+const io = socketIO(server);
+module.exports.io = io;
+console.log('main에서 출력한 Io',io);

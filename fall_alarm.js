@@ -11,10 +11,10 @@ function insert_alarm_table(mac_addr, alarm_time, res){
         connection.query(insert_query, mac_addr, alarm_time, function(error,result){
           if(error){
             console.log(error);
-            res.status(200).send({'key':error.code});
+            res.status(200).send({'key':-3, 'err_code':error.code});
           }
           else{ // 성공적으로 alarm이 alarm table에 등록됨!
-              res.send({'key':1});
+              res.send({'key':2});
           }
         })
         connection.release();

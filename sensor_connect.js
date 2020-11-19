@@ -32,7 +32,7 @@ module.exports.check_and_sensor_connect =  function(req,res){
         connection.query(check_query, mac_addr, function(error, results){
             if(error){
               console.log(error);
-              res.status(200).send({'key':error.code});
+              res.status(200).send({'key':-3, 'err_code':error.code});
               connection.release();
             }
             else{

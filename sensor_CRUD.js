@@ -14,7 +14,7 @@ function sensor_register(m_addr, res){
     connection.query(insert_query, mac_addr,function(error,result){
       if(error){
         console.log(error);
-        res.status(200).send({'key':error.code});
+        res.status(200).send({'key':-2, 'err_code':error.code});
       }
       else{ // 성공적으로 sensor가 sensor테이블에 등록됨
           res.send({'key':1});
@@ -31,7 +31,7 @@ function sensor_deletion(mac_addr, res){
     connection.query(delete_query, mac_addr,function(error,result){
       if(error){
         console.log(error);
-        res.status(200).send({'key':error.code});
+        res.status(200).send({'key':-2, 'err_code':error.code});
       }
       else{ // 성공적으로 sensor가 sensor테이블에서 삭제됨
           res.send({'key':1});
@@ -50,7 +50,7 @@ function sensor_modification(m_addr, res, modi){
     connection.query(update_query, modi["new_location"], mac_addr, function(error,result){
       if(error){
         console.log(error);
-        res.status(200).send({'key':error.code});
+        res.status(200).send({'key':-2, 'err_code':error.code});
       }
       else{ // 성공적으로 new location이 update됨
           res.send({'key':1});
@@ -118,7 +118,7 @@ module.exports.check_sensor_list =  function(req,res){
     connection.query(print_query, email_addr, function(error, results){
         if(error){
           console.log(error);
-          res.status(200).send({'key':error.code});
+          res.status(200).send({'key':-2, 'err_code':error.code});
           connection.release();
         }
         else{

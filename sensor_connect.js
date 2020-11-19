@@ -4,6 +4,7 @@ const format = require('./format_check.js');
 
 const pool = mysql.createPool(config);
 
+// 
 function sensor_connect(mac_addr, info, res){
     pool.getConnection(function(error, connection){
         let update_query = 'update Sensor set email_address=?, location=?, board_nickname=?, sensor_status=? where wifi_mac_address=?';  // sensor table에 update

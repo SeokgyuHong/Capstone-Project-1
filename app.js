@@ -37,11 +37,4 @@ app.post('/sensor_list', function(req,res){
     sensor_crud.check_sensor_list(req,res); // json으로 e_addr 보내기
 })
 
-// var flag = true;
-// while (flag){
-//     flag = false;
-//     TIMEOUT(3);
-// }
-// fcm()
-
 app.listen(3000);

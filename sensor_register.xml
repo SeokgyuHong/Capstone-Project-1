@@ -185,7 +185,7 @@
                 android:id="@+id/confirm_button2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="확 인"
+                android:text="등  록"
                 android:textSize="18sp"
                 android:textColor="@color/colorAccent"
                 />

@@ -129,9 +129,10 @@
                     android:id="@+id/confirm_button2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="변 경"
+                    android:text="수 정"
                     android:textColor="@color/colorAccent"
-                    android:textSize="18sp" />
+                    android:backgroundTint="#7EA2F9"
+                    android:textSize="18sp"/>
             </LinearLayout>
         </LinearLayout>
 

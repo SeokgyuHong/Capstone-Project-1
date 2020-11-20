@@ -55,7 +55,7 @@
                 android:text="회원가입 완료"
                 android:textStyle="bold"
                 android:textColor="@color/colorAccent"
-                android:background="@drawable/edge6"
+                android:background="@drawable/edge16"
                 android:gravity="center"
                 android:layout_width="0dp" />
         </LinearLayout>

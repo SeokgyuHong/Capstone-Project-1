@@ -14,7 +14,9 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="MissingClass">
-        <activity android:name=".delete_accout_activity"></activity>
+        <activity android:name=".Sensor_inform"></activity>
+        <activity android:name=".DaumWebViewActivity" />
+        <activity android:name=".delete_accout_activity" />
         <activity android:name=".account_register_complete" />
         <activity android:name=".kakaoactivity" />
 
@@ -40,7 +42,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -56,8 +57,7 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_login"
-            />
+            android:label="@string/title_activity_login" />
         <activity
             android:name=".ContentActivity"
             android:parentActivityName=".MainActivity" />
@@ -67,7 +67,6 @@
         <activity
             android:name=".RegisterActivity"
             android:parentActivityName=".ui.login.LoginActivity" />
-
         <activity
             android:name=".additional_inform_register"
             android:parentActivityName=".RegisterActivity" />
@@ -77,7 +76,6 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-
         <service
             android:name=".FirebaseToken"
             android:stopWithTask="false">

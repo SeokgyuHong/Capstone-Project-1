@@ -11,24 +11,25 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/edge6"
         >
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearLayoutCompat"
-            android:layout_width="405dp"
-            android:layout_height="91dp"
+            android:layout_width="395dp"
+            android:layout_height="100dp"
             android:layout_marginTop="16dp"
-            android:background="@drawable/edge2"
+            android:background="@drawable/edge13"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="MissingConstraints">
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="50dp"
+                android:layout_width="70dp"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="30dp"
-                android:src="@drawable/ic_free_icon_user_149071" />
+                android:src="@drawable/profile" />
 
 
             <androidx.appcompat.widget.LinearLayoutCompat
@@ -44,20 +45,22 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="match_parent"
                         android:layout_height="30dp"
-                        android:layout_marginTop="15dp"
+                        android:layout_marginTop="23dp"
                         android:gravity="left|center"
                         android:paddingLeft="10dp"
-                        android:text="ljs3271@naver.com"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:text="노준석"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/login_font"/>
 
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="match_parent"
                         android:layout_height="20dp"
                         android:gravity="left|center"
                         android:paddingLeft="10dp"
-                        android:text="노준석"
-                        android:textSize="14sp" />
+                        android:text="ljs3271@naver.com"
+                        android:textColor="@color/login_font"
+                        android:textSize="18sp" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
@@ -66,10 +69,10 @@
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearLayoutCompat2"
-            android:layout_width="405dp"
+            android:layout_width="395dp"
             android:layout_height="200dp"
-            android:layout_marginTop="4dp"
-            android:background="@drawable/edge2"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/edge13"
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -81,41 +84,48 @@
                 android:paddingLeft="30dp"
                 android:paddingTop="20dp"
                 android:text="계정관리"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/login_font"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:clickable="true"
-                android:paddingLeft="30dp"
+                android:paddingLeft="40dp"
                 android:paddingTop="10dp"
-                android:text="회원정보 조회" />
+                android:text="회원정보 조회"
+                android:textColor="@color/login_font"
+                android:textSize="18sp"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:clickable="true"
-                android:paddingLeft="30dp"
+                android:paddingLeft="40dp"
                 android:paddingTop="10dp"
-                android:text="비밀번호 재설정" />
+                android:text="비밀번호 재설정"
+                android:textColor="@color/login_font"
+                android:textSize="18sp"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/account_delete"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:clickable="true"
-                android:paddingLeft="30dp"
+                android:paddingLeft="40dp"
                 android:paddingTop="10dp"
-                android:text="회원 탈퇴" />
+                android:text="회원 탈퇴"
+                android:textColor="@color/login_font"
+                android:textSize="18sp"/>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="405dp"
+            android:layout_width="395dp"
             android:layout_height="150dp"
-            android:layout_marginTop="4dp"
-            android:background="@drawable/edge2"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/edge13"
             app:layout_constraintEnd_toEndOf="parent"
             android:orientation="vertical"
             app:layout_constraintStart_toStartOf="parent"
@@ -127,25 +137,30 @@
                 android:paddingLeft="30dp"
                 android:paddingTop="20dp"
                 android:text="앱 설정"
-                android:textSize="16sp"
+                android:textSize="20sp"
+                android:textColor="@color/login_font"
                 android:textStyle="bold" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:clickable="true"
-                android:paddingLeft="30dp"
+                android:paddingLeft="40dp"
                 android:paddingTop="10dp"
-                android:text="알림 설정" />
+                android:text="알림 설정"
+                android:textColor="@color/login_font"
+                android:textSize="18sp"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/logout_button"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:clickable="true"
-                android:paddingLeft="30dp"
+                android:paddingLeft="40dp"
                 android:paddingTop="10dp"
-                android:text="로그아웃" />
+                android:text="로그아웃"
+                android:textColor="@color/login_font"
+                android:textSize="18sp"/>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

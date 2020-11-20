@@ -10,17 +10,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
-import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
@@ -34,41 +31,22 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.myapplication.JSONTask;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.RegisterActivity;
-import com.example.myapplication.SubActivity;
 import com.example.myapplication.ThreadTask;
+import com.example.myapplication.Utils;
 import com.example.myapplication.additional_inform_register;
 import com.example.myapplication.data.LoginRepository;
-import com.example.myapplication.ui.login.LoginViewModel;
-import com.example.myapplication.ui.login.LoginViewModelFactory;
-import com.google.android.gms.common.api.Response;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 import com.kakao.auth.AccessTokenCallback;
-import com.kakao.auth.ApiErrorCode;
-import com.kakao.auth.ApiResponseCallback;
-import com.kakao.auth.AuthService;
 import com.kakao.auth.AuthType;
 import com.kakao.auth.ISessionCallback;
 import com.kakao.auth.Session;
 import com.kakao.auth.authorization.accesstoken.AccessToken;
-import com.kakao.auth.network.response.AccessTokenInfoResponse;
 import com.kakao.network.ErrorResult;
-import com.kakao.sdk.auth.LoginClient;
-import com.kakao.sdk.auth.model.OAuthToken;
-import com.kakao.sdk.common.KakaoSdk;
-import com.kakao.sdk.user.UserApiClient;
-import com.kakao.sdk.user.model.User;
 import com.kakao.usermgmt.UserManagement;
-import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.kakao.usermgmt.callback.MeV2ResponseCallback;
 import com.kakao.usermgmt.response.MeV2Response;
-import com.kakao.usermgmt.response.model.AgeRange;
-import com.kakao.usermgmt.response.model.Gender;
 import com.kakao.usermgmt.response.model.Profile;
 import com.kakao.usermgmt.response.model.UserAccount;
 import com.kakao.util.OptionalBoolean;
@@ -78,7 +56,6 @@ import com.nhn.android.naverlogin.OAuthLoginHandler;
 import com.nhn.android.naverlogin.data.OAuthLoginState;
 import com.nhn.android.naverlogin.ui.view.OAuthLoginButton;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -91,20 +68,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-
-import kotlin.Unit;
-import kotlin.jvm.functions.Function2;
-import okhttp3.Request;
 
 import static com.nhn.android.naverlogin.OAuthLogin.mOAuthLoginHandler;
 
@@ -143,6 +113,7 @@ public class LoginActivity extends AppCompatActivity  {
     private SharedPreferences.Editor login_infromation_editor;
     private SharedPreferences.Editor login_log_editor;
 
+    private String kakao_Email;
     Session Kakao_session;
     private LoginRepository KakaoTalkService;
     /*
@@ -157,8 +128,9 @@ public class LoginActivity extends AppCompatActivity  {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
-                .get(LoginViewModel.class);
+        Utils.setStatusBarColor(this, Utils.StatusBarcolorType.BLACK_STATUS_BAR);
+
+        loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory()).get(LoginViewModel.class);
 
         mContext = this;
         ip = getString(R.string.server_ip);
@@ -183,25 +155,21 @@ public class LoginActivity extends AppCompatActivity  {
                 ,OAUTH_CLIENT_SECRET
                 ,OAUTH_CLIENT_NAME
         );
-        Log.e("Naver Login", "step1");
         OAuthLoginButton mOAuthLoginButton = (OAuthLoginButton) findViewById(R.id.buttonOAuthLoginImg);
         mOAuthLoginButton.setOAuthLoginHandler(mOAuthLoginHandler);
-        Log.e("Naver Login", "step2");
         @SuppressLint("HandlerLeak") OAuthLoginHandler mOAuthLoginHandler = new OAuthLoginHandler() {
             @Override
             public void run(boolean success) {
                     if (success) {// naver access이 있다면
                         String accessToken = mOAuthLoginModule.getAccessToken(mContext);
                         String refreshToken = mOAuthLoginModule.getRefreshToken(mContext);
-                        Log.e("Token accessToken", accessToken);
-                        Log.e("Token refreshToken", refreshToken);
+                        Log.e("naver Token accessToken", accessToken);
+                        Log.e("naver Token refreshToken", refreshToken);
 
-                        /*long expiresAt = mOAuthLoginModule.getExpiresAt(mContext);
-                        String tokenType = mOAuthLoginModule.getTokenType(mContext);
-                         */
                         if(!Kakao_session.checkAndImplicitOpen()){ // 카카오 세션이 없다면 page가 넘어감
+                            //로그인 성공
                             Log.e("Login Check", "kakao Session이 없고 naver로그인 성공");
-                             // 네이버 로그인 접근 토큰;
+                            // 네이버 로그인 접근 토큰;
                             String header = "Bearer " + accessToken; // Bearer 다음에 공백 추가
                             apiURL = "https://openapi.naver.com/v1/nid/me";
 
@@ -210,34 +178,75 @@ public class LoginActivity extends AppCompatActivity  {
 
                             makeThread(apiURL, requestHeaders);
                             String responseBody = null;
-                            //responseBody = get(apiURL,requestHeaders);
                             responseBody = Naver_profile_ReadBody;
-                            //System.out.println(responseBody);
-                            Log.e("Naver login", responseBody);
 
-                            login_information_pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
-                            login_infromation_editor = login_information_pref.edit();
-                            login_infromation_editor.putString("login_type" , "naver");
-                            login_infromation_editor.commit();
+                            ThreadTask<Object> result = getThreadTask_social_sign_in(Email, "naver","/social_sign_in");
+                            result.execute(ip);
 
-                            if(first_naver_login.equals("true")){
-                                Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
-                                intent.putExtra("email", Email);
-                                intent.putExtra("login_type","naver");
-
-                                login_log_pref = getSharedPreferences("SNS_login_log", Activity.MODE_PRIVATE);
-                                login_log_editor = login_log_pref.edit();
-                                login_log_editor.putString("first_naver_login" , "false");
-                                login_log_editor.commit();
-                                Log.e("Naver_login 성공 ", Email);
-                                //intent.putExtra("pw", PasswordConfirmText.getText().toString());
-                                startActivity(intent);
+                            if(result.getResult() == 1){
+                                //이메일 양식 에러
                             }
-                            else if(first_naver_login.equals("false")){
+                            else if(result.getResult() == 2){
+                                //등록되지 않은 이메일 // 회원가입 페이지로
+                                //실제 구현 다 되고나면 ㅇ여기 넣기
+//                                if(first_naver_login.equals("true")){
+                                    Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
+                                    intent.putExtra("email", Email);
+                                    intent.putExtra("login_type","naver");
+
+                                    login_log_pref = getSharedPreferences("SNS_login_log", Activity.MODE_PRIVATE);
+                                    login_log_editor = login_log_pref.edit();
+                                    login_log_editor.putString("first_naver_login" , "false");
+                                    login_log_editor.commit();
+                                    Log.e("Naver_login 성공 ", Email);
+                                    //intent.putExtra("pw", PasswordConfirmText.getText().toString());
+                                    startActivity(intent);
+//                                }
+                            }
+                            else if(result.getResult() == 3){ // 회원가입 실패 중복된 이메일이 있ㅅ음
+                                Toast.makeText(LoginActivity.this , "이미 등록된 이메일이 있습니다.", Toast.LENGTH_SHORT).show();
+                                login_information_pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
+                                login_infromation_editor = login_information_pref.edit();
+
+                                if(first_naver_login.equals("true")){
+                                    Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
+                                    intent.putExtra("email", Email);
+                                    intent.putExtra("login_type","naver");
+
+                                    login_log_pref = getSharedPreferences("SNS_login_log", Activity.MODE_PRIVATE);
+                                    login_log_editor = login_log_pref.edit();
+                                    login_log_editor.putString("first_naver_login" , "false");
+                                    login_log_editor.commit();
+                                    Log.e("Naver_login 성공 ", Email);
+                                    //intent.putExtra("pw", PasswordConfirmText.getText().toString());
+                                    startActivity(intent);
+                                }
+                                else if(first_naver_login.equals("false")){
+                                    //가져온 Email을 서버에 전송, Email이 user table에 있으면 true를 받아옴
+                                    //true이면 main activity로 넘어감
+                                    //sns_login_request(Email, "naver");
+                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    login_infromation_editor.putString("login_type" , "naver");
+                                    login_infromation_editor.putString("email" , Email);
+                                    login_infromation_editor.commit();
+                                    startActivity(intent);
+                                    finish();
+
+                                }
+                            }
+                            else if(result.getResult() == 4) { // 로그인 성공!
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+
+                                login_information_pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
+                                login_infromation_editor = login_information_pref.edit();
+                                login_infromation_editor.putString("login_type" , "naver");
                                 login_infromation_editor.putString("email" , Email);
+                                login_infromation_editor.commit();
                                 startActivity(intent);
                                 finish();
+                            }
+                            else if(result.getResult() == 0) {
+                                //시스템 에러
                             }
                     }
                 } else { //로그인 실패시 핸들러
@@ -275,29 +284,6 @@ public class LoginActivity extends AppCompatActivity  {
              }
         });
 
-        //토큰이 있는지 확인하고 존재한다면 access token의 갱신을 시도
-        // 갱신에 성공하면 위에 OAuthLogin Handler 호출.
-
-        //카카오 로그인
-        /*btn_custom_login_out = (Button) findViewById(R.id.btn_custom_login_out);
-        btn_custom_login_out.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                UserManagement.getInstance()
-                        .requestLogout(new LogoutResponseCallback() {
-                            @Override
-                            public void onCompleteLogout() {
-                                Toast.makeText(LoginActivity.this, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-            }
-        });
-*/
-
-        //KakaoSdk.init(this, "fe4237a89e382b077a3a82ff23647544");
-
-       // KakaoSdk.init(this, "fe4237a89e382b077a3a82ff23647544");
-
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
         final Button loginButton = findViewById(R.id.login);
@@ -332,15 +318,18 @@ public class LoginActivity extends AppCompatActivity  {
                 }
                 if (loginResult.getSuccess() != null) { // 성공하면
                     updateUiWithUser(loginResult.getSuccess());
+                    Email = usernameEditText.getText().toString();
+                    login_information_pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
+                    login_infromation_editor = login_information_pref.edit();
+                    login_infromation_editor.putString("login_type" , "general");
+                    login_infromation_editor.putString("email" , Email);
+                    login_infromation_editor.commit();
+
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
-
+                    finish();
                 }
-
                 setResult(Activity.RESULT_OK);
-                finish();
-                //Complete and destroy login activity once successful
-
             }
         });
 
@@ -370,7 +359,7 @@ public class LoginActivity extends AppCompatActivity  {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     loginViewModel.login(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString()); // 로그인
+                            passwordEditText.getText().toString(), ip); // 로그인
                 }
                 return false;
             }
@@ -381,7 +370,7 @@ public class LoginActivity extends AppCompatActivity  {
             public void onClick(View v) {
                 //loadingProgressBar.setVisibility(View.VISIBLE);
                 loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString()); // 로그인 시작
+                        passwordEditText.getText().toString(), ip); // 로그인 시작
             }
         });
 
@@ -393,7 +382,77 @@ public class LoginActivity extends AppCompatActivity  {
             }
         });
     }
+    private ThreadTask<Object> getThreadTask_social_sign_in(String email,String user_type, String Router_name){
+        return new ThreadTask<Object>() {
+            private int response_result;
+            private String error_code;
+            @Override
+            protected void onPreExecute() {// excute 전에
 
+            }
+
+            @Override
+            protected void doInBackground(String... urls) throws IOException, JSONException {//background로 돌아갈것
+                HttpURLConnection con = null;
+                JSONObject sendObject = new JSONObject();
+                BufferedReader reader = null;
+
+                URL url = new URL(urls[0] +Router_name);
+
+                con = (HttpURLConnection) url.openConnection();
+
+                sendObject.put("email_address", email);
+                sendObject.put("user_type", user_type);
+
+                con.setRequestMethod("POST");//POST방식으로 보냄
+                con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
+                con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송
+                con.setRequestProperty("Accept", "application/json");//서버에 response 데이터를 html로 받음
+                con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
+                con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
+
+                OutputStream outStream = con.getOutputStream();
+                outStream.write(sendObject.toString().getBytes());
+                outStream.flush();
+
+                int responseCode = con.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+
+                    InputStream stream = con.getInputStream();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    byte[] byteBuffer = new byte[1024];
+                    byte[] byteData = null;
+                    int nLength = 0;
+                    while ((nLength = stream.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+                        baos.write(byteBuffer, 0, nLength);
+                    }
+                    byteData = baos.toByteArray();
+                    String response = new String(byteData);
+                    JSONObject responseJSON = new JSONObject(response);
+
+                    this.response_result = (Integer) responseJSON.get("key");
+                    this.error_code = (String) responseJSON.get("err_code");
+                }
+            }
+
+            @Override
+            protected void onPostExecute() {
+
+            }
+
+            @Override
+            public int getResult() {
+                return response_result;
+            }
+
+            @Override
+            public String getErrorCode() {
+                return error_code;
+            }
+        };
+    }
+
+    //네이버 사용자 정보 받아오기
     public void makeThread(String apiURL, Map<String, String> requestHeaders){
         new ThreadTask<Object>() {
             String ApiURL = apiURL;
@@ -451,6 +510,16 @@ public class LoginActivity extends AppCompatActivity  {
             protected void onPostExecute() {
 
             }
+
+            @Override
+            public int getResult() {
+                return 0;
+            }
+
+            @Override
+            public String getErrorCode() {
+                return null;
+            }
         }.execute(apiURL);
     }
 
@@ -496,7 +565,7 @@ public class LoginActivity extends AppCompatActivity  {
         con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
         con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
 
-        con.setConnectTimeout(15000);
+        con.setConnectTimeout(3000);
         con.connect();
         Log.e("naver profile", "profile 정보 서버 전송중");
 
@@ -537,10 +606,87 @@ public class LoginActivity extends AppCompatActivity  {
         Log.e("naver profile", "profile 정보 서버 전송 완료");
     }
 
+    //카카오톡, 네이버 social_sign_in
+    private int sns_login_request(String request_email, String social_type){
+
+        ThreadTask<Object> result = new ThreadTask<Object>() {
+            String Request_email = request_email;
+            String Social_type = social_type;
+            private int response_result;
+            private String error_code;
+
+            @Override
+            protected void onPreExecute() {// excute 전에
+
+            }
+
+            @Override
+            protected void doInBackground(String... urls) throws IOException, JSONException {//background로 돌아갈것
+                HttpURLConnection con = null;
+                JSONObject sendObject = new JSONObject();
+                BufferedReader reader = null;
+
+                URL url = new URL(urls[0] +"/social_sign_in");
+                con = (HttpURLConnection) url.openConnection();
+
+                sendObject.put("email",Request_email);
+
+                con.setRequestMethod("POST");//POST방식으로 보냄
+                con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
+                con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송
+                con.setRequestProperty("Accept", "application/json");//서버에 response 데이터를 html로 받음
+                con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
+                con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
+
+                OutputStream outStream = con.getOutputStream();
+                outStream.write(sendObject.toString().getBytes());
+                outStream.flush();
+
+                int responseCode = con.getResponseCode();
+                if(responseCode == HttpURLConnection.HTTP_OK){
+                    InputStream stream = con.getInputStream();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    byte[] byteBuffer = new byte[1024];
+                    byte[] byteData = null;
+                    int nLength = 0;
+
+                    while ((nLength = stream.read(byteBuffer, 0, byteBuffer.length)) != -1){
+                        baos.write(byteBuffer, 0, nLength);
+                    }
+                    byteData = baos.toByteArray();
+
+                    String response = new String(byteData);
+
+                    JSONObject responseJSON = new JSONObject(response);
+                    this.response_result = (Integer) responseJSON.get("result");
+                }
+            }
+
+            @Override
+            protected void onPostExecute() {
+
+            }
+
+            @Override
+            public int getResult() {
+                return response_result;
+            }
+
+            @Override
+            public String getErrorCode() {
+                return error_code;
+            }
+
+        };
+
+        result.execute(ip);
+        return result.getResult();
+    }
+
     private void updateUiWithUser(LoggedInUserView model) {
-        String welcome = getString(R.string.welcome) + model.getDisplayName();
+        //String welcome = getString(R.string.welcome) + model.getDisplayName();
         // TODO : initiate successful logged in experience
-        Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
+      //  Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {
@@ -609,6 +755,11 @@ public class LoginActivity extends AppCompatActivity  {
 
     public class SessionCallback implements ISessionCallback { // 카카오 로그인
         private Context mContext;
+        //private MeV2ResponseCallback responseCallback;
+
+        private UserAccount kakaoAccount;
+        private KakaoResponseCallback kakaoResponseCallback;
+
         public SessionCallback(Context mContext){
             this.mContext = mContext;
         }
@@ -618,45 +769,11 @@ public class LoginActivity extends AppCompatActivity  {
             //System.out.println("tlqkfktkqtkqktqk");
                 if(OAuthLoginState.NEED_LOGIN.equals(OAuthLogin.getInstance().getState(mContext))) {
                     Log.e("Login Activitiy", "Naver login 안되어있음.");
-                getAgree();
-                kakao_user_information_request();
-
-                login_log_pref = getSharedPreferences("SNS_login_log", Activity.MODE_PRIVATE);
-                String first_kakao_login = login_log_pref.getString("first_kakao_login", "true");
-
-                login_log_editor = login_log_pref.edit();
-                //login_log_editor.putString("login_type" , "kakao");
-                //login_log_editor.commit();=
-                //Log.e("asdfasdf", Email);
-                //login_infromation_editor.putString("email" , Email);
-
-
-                if(first_kakao_login.equals("true")){
-                    Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
-                    intent.putExtra("email", Email);
-                    intent.putExtra("login_type","kakao");
-
-                    login_log_editor = login_log_pref.edit();
-                    login_log_editor.putString("first_kakao_login" , "false");
-                    login_log_editor.commit();
-                    Log.e("Kakao_login 성공 ", "tqtqtqtqtqtqtqtq");
-                    //intent.putExtra("pw", PasswordConfirmText.getText().toString());
-                    startActivity(intent);
-                }
-                else{
-
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);//  성공하고 다음페이지로 넘어감
-                    finish();
-                }
-            }
-            else{
-                Log.e("Login Activitiy", "Naver login 되어있음.");
+                    getAgree();
+                    kakao_user_information_request();
             }
             //((LoginActivity) LoginActivity.loginContext).method1();
-
         }
-
 
         // 로그인에 실패한 상태
         @Override
@@ -664,98 +781,163 @@ public class LoginActivity extends AppCompatActivity  {
             Log.e("SessionCallback :: ", "onSessionOpenFailed : " + exception.getMessage());
         }
 
-
-        // 사용자 정보 요청
+        // 카카오 사용자 정보 요청
         public void kakao_user_information_request() {
-            UserManagement.getInstance()
-                    .me(new MeV2ResponseCallback() {
-                        @Override
-                        public void onSessionClosed(ErrorResult errorResult) {
-                            Log.e("KAKAO_API", "세션이 닫혀 있음: " + errorResult);
+            kakaoResponseCallback = new KakaoResponseCallback();
+            UserManagement.getInstance().me(kakaoResponseCallback);
+        }
+
+        public class KakaoResponseCallback extends MeV2ResponseCallback{
+           // public String kakao_Email;
+           // private UserAccount kakaoAccount;
+
+            public UserAccount getKakaoAccount(){
+                return kakaoAccount;
+            }
+            @Override
+            public void onSessionClosed(ErrorResult errorResult) {
+                Log.e("KAKAO_API", "세션이 닫혀 있음: " + errorResult);
+            }
+
+            @Override
+            public void onFailure(ErrorResult errorResult) {
+                Log.e("KAKAO_API", "사용자 정보 요청 실패: " + errorResult);
+            }
+
+            @Override
+            public void onSuccess(MeV2Response result) {
+                Log.e("KAKAO_API", "사용자 아이디: " + result.getId());
+
+                kakaoAccount = result.getKakaoAccount();
+                System.out.println("kakaoAccount.emailNeedsAgreement()" + kakaoAccount.emailNeedsAgreement());
+
+                if (kakaoAccount != null) {
+                    kakao_Email = kakaoAccount.getEmail();
+                    //setEmail(kakaoAccount.getEmail());
+                    Log.e("KAKAO_API", "kakaAccount null 아님");
+                    Log.e("KAKAO_API", kakao_Email);
+                    if (kakao_Email != null) {
+                        Log.e("KAKAO_API", "email: " + kakao_Email);
+                    } else if (kakaoAccount.emailNeedsAgreement() == OptionalBoolean.TRUE) {
+                        Log.e("kakao Profile", "email 획득 가능");
+                        // 동의 요청 후 이메일 획득 가능
+                        // 단, 선택 동의로 설정되어 있다면 서비스 이용 시나리오 상에서 반드시 필요한 경우에만 요청해야 합니다.
+                    } else {
+                        // 이메일 획득 불가
+                        Log.e("kakao Profile", "email 획득 불가");
+                    }
+                    // 프로필
+                    Profile profile = kakaoAccount.getProfile();
+                    if (profile != null) {
+                        String age = kakaoAccount.getAgeRange().getValue();
+                        String birthday = kakaoAccount.getBirthday();
+                        String gender =kakaoAccount.getGender().getValue();
+                        String name = kakaoAccount.getProfile().getNickname();
+
+                        login_log_pref = getSharedPreferences("SNS_login_log", Activity.MODE_PRIVATE);
+                        String first_kakao_login = login_log_pref.getString("first_kakao_login", "true");
+
+                        login_log_editor = login_log_pref.edit();
+
+                        ThreadTask<Object> social_sign_in_result = getThreadTask_social_sign_in(kakao_Email, "kakao","/social_sign_in");
+                        social_sign_in_result.execute(ip);
+
+                        if(social_sign_in_result.getResult() == 1){
+                            //이메일 형식 에러
                         }
+                        else if(social_sign_in_result.getResult() == 2){
+                            //등록되지 않은 이메일
+                            //나중에 주석 풀기
 
-                        @Override
-                        public void onFailure(ErrorResult errorResult) {
-                            Log.e("KAKAO_API", "사용자 정보 요청 실패: " + errorResult);
+                        Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
+                            intent.putExtra("email", kakao_Email);
+                            intent.putExtra("login_type","kakao");
+
+                            login_log_editor = login_log_pref.edit();
+                            login_log_editor.putString("first_kakao_login" , "false");
+                            login_log_editor.commit();
+                            Log.e("Kakao_login 성공 ", "tqtqtqtqtqtqtqtq");
+                            //intent.putExtra("pw", PasswordConfirmText.getText().toString());
+                            startActivity(intent);
+//
+//                        if(first_kakao_login.equals("true")){
+//                                                    Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
+//                                                    intent.putExtra("email", Email);
+//                                                    intent.putExtra("login_type","kakao");
+//
+//                                                    login_log_editor = login_log_pref.edit();
+//                                                    login_log_editor.putString("first_kakao_login" , "false");
+//                                                    login_log_editor.commit();
+//                                                    Log.e("Kakao_login 성공 ", "tqtqtqtqtqtqtqtq");
+//                                                    //intent.putExtra("pw", PasswordConfirmText.getText().toString());
+//                                                    startActivity(intent);
+//                                                }
                         }
+                        else if(social_sign_in_result.getResult() == 3){
+                            //등록된 이메일이 있음
+                            if(first_kakao_login.equals("true")){
+                                Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
+                                intent.putExtra("email",kakao_Email);
+                                intent.putExtra("login_type","kakao");
 
-                        @Override
-                        public void onSuccess(MeV2Response result) {
-                            Log.e("KAKAO_API", "사용자 아이디: " + result.getId());
+                                login_log_editor = login_log_pref.edit();
+                                login_log_editor.putString("first_kakao_login" , "false");
+                                login_log_editor.commit();
+                                Log.e("Kakao_login 성공 ", "tqtqtqtqtqtqtqtq");
+                                //intent.putExtra("pw", PasswordConfirmText.getText().toString());
+                                startActivity(intent);
+                            }
+                            else{
+                                login_information_pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
+                                login_infromation_editor = login_information_pref.edit();
+                                login_infromation_editor.putString("login_type" , "kakao");
+                                login_infromation_editor.putString("email" , kakao_Email);
+                                login_infromation_editor.commit();
 
-                            UserAccount kakaoAccount = result.getKakaoAccount();
-                            System.out.println("kakaoAccount.emailNeedsAgreement()" + kakaoAccount.emailNeedsAgreement());
-
-                            if (kakaoAccount != null) {
-                                setEmail(kakaoAccount.getEmail());
-                                Log.e("KAKAO_API", "kakaAccount null 아님");
-                                Log.e("KAKAO_API", Email);
-                                if (Email != null) {
-                                    Log.e("KAKAO_API", "email: " + Email);
-                                } else if (kakaoAccount.emailNeedsAgreement() == OptionalBoolean.TRUE) {
-                                    Log.e("kakao Profile", "email 획득 가능");
-                                    // 동의 요청 후 이메일 획득 가능
-                                    // 단, 선택 동의로 설정되어 있다면 서비스 이용 시나리오 상에서 반드시 필요한 경우에만 요청해야 합니다.
-                                } else {
-                                    // 이메일 획득 불가
-                                    Log.e("kakao Profile", "email 획득 불가");
-                                }
-                                // 프로필
-                                Profile profile = kakaoAccount.getProfile();
-                                if (profile != null) {
-                                    String age = kakaoAccount.getAgeRange().getValue();
-                                    String birthday = kakaoAccount.getBirthday();
-                                    String gender =kakaoAccount.getGender().getValue();
-                                    String name = kakaoAccount.getProfile().getNickname();
-
-                                    login_information_pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
-                                    login_infromation_editor = login_information_pref.edit();
-                                    login_infromation_editor.putString("login_type" , "kakao");
-
-                                    login_infromation_editor.putString("email" , Email);
-                                    login_infromation_editor.commit();
-
-                                    new ThreadTask<Object>() {
-                                        String ApiURL = apiURL;
-
-                                        @Override
-                                        protected void onPreExecute() {
-
-                                        }
-
-                                        @Override
-                                        protected void doInBackground(String... urls){//background로 돌아갈것
-                                            try {
-                                                sendProfile("kakao", name, age, Email, gender,birthday);
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-
-                                        @Override
-                                        protected void onPostExecute() {
-
-                                        }
-                                    }.execute(ip);
-
-
-                                } else if (kakaoAccount.profileNeedsAgreement() == OptionalBoolean.TRUE) {
-                                    // 동의 요청 후 프로필 정보 획득 가능
-
-                                } else {
-                                    // 프로필 획득 불가
-                                    Log.e("kakao Profile", "프로필 획득 불가");
-                                }
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                startActivity(intent);//  성공하고 다음페이지로 넘어감
+                                finish();
                             }
                         }
-                    });
+                        else if(social_sign_in_result.getResult() == 4){
+                            //로그인 성공!
+                        login_information_pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
+                        login_infromation_editor = login_information_pref.edit();
+                        login_infromation_editor.putString("login_type" , "kakao");
+                        login_infromation_editor.putString("email" , kakao_Email);
+                        login_infromation_editor.commit();
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);//  성공하고 다음페이지로 넘어감
+                        finish();
+                        }
+                        else if(social_sign_in_result.getResult() == 0){
+                            //시스템 에러
+                        }
 
-        }
+                    }
+                    else{
+                        Log.e("Login Activitiy", "Naver login 되어있음.");
+                    }
 
-        public void setEmail(String email) {
-            Email = email;
+                }
+                else if (kakaoAccount.profileNeedsAgreement() == OptionalBoolean.TRUE) {
+                        // 동의 요청 후 프로필 정보 획득 가능
+
+                    }
+                else {
+                        // 프로필 획득 불가
+                        Log.e("kakao Profile", "프로필 획득 불가");
+                    }
+                }
+
+
+            public String getEmail() {
+                return kakao_Email;
+            }
+
         }
     }
+
+
+
 }

@@ -17,6 +17,7 @@ public class account_register_complete extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_register_complete);
+        Utils.setStatusBarColor(this, Utils.StatusBarcolorType.BLACK_STATUS_BAR);
 
         go_to_login_activity_button = (Button)findViewById(R.id.go_to_login_activity_button);
         go_to_login_activity_button.setOnClickListener(new View.OnClickListener() {

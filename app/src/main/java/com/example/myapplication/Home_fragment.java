@@ -1,13 +1,20 @@
 package com.example.myapplication;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,6 +31,14 @@ public class Home_fragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private RecyclerView recyclerView;
+    //private RecyclerView.Adapter recycle_adapter;
+    private RecyclerView.LayoutManager layoutManager;
+    private RecyclerView.LayoutManager layoutManager2;
+
+    private RecycleAdaptors recycleAdaptors;
+
 
     public Home_fragment() {
         // Required empty public constructor
@@ -61,6 +76,21 @@ public class Home_fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home_fragment, container, false);
+        View v = inflater.inflate(R.layout.fragment_home_fragment, container, false);
+
+        recyclerView = (RecyclerView) v.findViewById(R.id.Recycler_view);
+        layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+        recycleAdaptors = new RecycleAdaptors();
+
+        recycleAdaptors.addItem(new Sensor_list("sensor1", "3층 301호 화장실"));
+        recycleAdaptors.addItem(new Sensor_list("sensor2", "3층 302호 화장실"));
+        recycleAdaptors.addItem(new Sensor_list("sensor3", "3층 303호 화장실"));
+        recycleAdaptors.addItem(new Sensor_list("sensor4", "3층 304호 화장실"));
+
+        recyclerView.setAdapter(recycleAdaptors);
+
+        return v;
     }
+
 }

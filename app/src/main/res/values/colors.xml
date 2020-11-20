@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#85B8CB</color>
+    <color name="colorPrimary">#7EA2F9</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#FFFFFF</color>
     <color name="login_font">#000000</color>
     <color name="login_register">#e71837</color>
     <color name="CERULEAN">#1D6A96</color>
     <color name="TURQUOISE">#85B8CB</color>
+    <color name="white">#FFFFFF</color>
+    <color name="gray">#D9ECEEF7</color>
+    <color name="colorGrid">#D9ECEEF7</color>
     <!-- #2196F3-->
     <!-- primary color 민트색 00BCD4 -->
 </resources>

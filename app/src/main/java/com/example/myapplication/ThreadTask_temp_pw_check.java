@@ -4,7 +4,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 
-public abstract class ThreadTask<Object> implements Runnable {
+public abstract class ThreadTask_temp_pw_check<Object> implements Runnable {
     // Argument
     Object mArgument;
 
@@ -17,9 +17,6 @@ public abstract class ThreadTask<Object> implements Runnable {
         // Store the argument
         mArgument = arg;
 
-        // Call onPreExecute
-        onPreExecute();
-
         // Begin thread work
         Thread thread = new Thread(this);
         thread.start();
@@ -30,12 +27,8 @@ public abstract class ThreadTask<Object> implements Runnable {
         }
         catch (InterruptedException e) {
             e.printStackTrace();
-            onPostExecute();
             return;
         }
-
-        // Call onPostExecute
-        onPostExecute();
     }
 
     @Override
@@ -49,14 +42,8 @@ public abstract class ThreadTask<Object> implements Runnable {
         }
     }
 
-    // onPreExecute
-    protected abstract void onPreExecute();
-
     // doInBackground
     protected abstract void doInBackground(String... urls) throws IOException, JSONException;
-
-    // onPostExecute
-    protected abstract void onPostExecute();
 
     public abstract int getResult();
     public abstract String getErrorCode();

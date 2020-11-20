@@ -19,17 +19,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -57,6 +52,8 @@ public class RegisterActivity extends AppCompatActivity {
     private boolean Security_code_check;
     private boolean IsValid_security_code = true;
 
+    private String ip;
+
     TimerTask timerTask;
     Timer timer = new Timer();
 
@@ -64,6 +61,7 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        Utils.setStatusBarColor(this, Utils.StatusBarcolorType.BLACK_STATUS_BAR);
 
         EmailText = (EditText)findViewById(R.id.email);
         PasswordText = (EditText)findViewById(R.id.pw);
@@ -84,6 +82,8 @@ public class RegisterActivity extends AppCompatActivity {
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        ip = getString(R.string.server_ip);
+
         //1. 이메일 형식인지 확인
         //2. 중복확인 누르면 서버로 전송
         //3. true이면 등록가능한 상태
@@ -91,6 +91,7 @@ public class RegisterActivity extends AppCompatActivity {
         //5. 이메일과 비밀번호, 재확인이 다 입력되어ㅣㅆ지 않으면 alert창 띄우기
         //6. 전부다 완료시 다음 창으로 넘어감.
 
+        //이메일 중복체크
         EmailcheckButton.setOnClickListener(new View.OnClickListener() {
             @Override
 
@@ -100,65 +101,24 @@ public class RegisterActivity extends AppCompatActivity {
                 //서버로 Email 전송하기
                 if (Email.contains("@")) {
                     if(Patterns.EMAIL_ADDRESS.matcher(Email).matches()){
-                        new ThreadTask<Object>() {
+                        ThreadTask<Object> result = getThreadTask(Email, "/id_duplication_check");
+                        result.execute(ip);
 
-                            @Override
-                            protected void onPreExecute() {// excute 전에
-
-                            }
-
-                            @Override
-                            protected void doInBackground(String... urls) throws IOException, JSONException {//background로 돌아갈것
-                                HttpURLConnection con = null;
-                                JSONObject sendObject = new JSONObject();
-                                BufferedReader reader = null;
-
-                                URL url = new URL(urls[0]);
-                                con = (HttpURLConnection) url.openConnection();
-
-                                sendObject.put("email",Email);
-
-                                con.setRequestMethod("POST");//POST방식으로 보냄
-                                con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
-                                con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송
-
-                                con.setRequestProperty("Accept", "text/html");//서버에 response 데이터를 html로 받음
-                                con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
-                                con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
-                                Log.e("tqeteqw", "1");
-                                con.setConnectTimeout(15000);
-                                con.connect();
-                                Log.e("tqeteqw", "2");
-                                OutputStream outStream = con.getOutputStream();
-                                //버퍼를 생성하고 넣음
-                                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outStream));
-                                writer.write(sendObject.toString());
-                                writer.flush();
-                                writer.close();//버퍼를 받아줌
-                                //서버로 부터 데이터받음
-                                InputStream stream = con.getInputStream();
-                                reader = new BufferedReader(new InputStreamReader(stream));
-                                StringBuilder buffer = new StringBuilder();
-                                String line = "";
-                                while((line = reader.readLine()) != null){
-                                    buffer.append(line);
-                                }
-                                duplication_check_result = buffer.toString();
-                            }
-
-                            @Override
-                            protected void onPostExecute() {
-
-                            }
-                        }.execute("http://10.0.2.2:3000/email_duplication_check");
-
-                        if(duplication_check_result.equals("false")){
+                        if(result.getResult() == 3){
                             Toast.makeText(getApplication(), "이미 등록된 이메일이 있습니다.", Toast.LENGTH_SHORT).show();
+                            duplication_check_result = "false";
                         }
-                        else if(duplication_check_result.equals("true")){
+                        else if(result.getResult() == 2){
                             Log.e("duplication Check", duplication_check_result);
+                            duplication_check_result = "true";
                             Toast.makeText(getApplication(), "등록된 계정이 없습니다.", Toast.LENGTH_SHORT).show();
                             findViewById(R.id.email_security_code_layout).setVisibility(View.VISIBLE);
+                        }
+                        else if(result.getResult() == 1){
+                            Log.e("Loginactivity","Email format error");
+                        }
+                        else if(result.getResult() == 0){
+                            Log.e("Loginactivity","System error");
                         }
                     }
                     else{
@@ -167,13 +127,10 @@ public class RegisterActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(RegisterActivity.this, "올바른 이메일 형식이 아닙니다.", Toast.LENGTH_SHORT).show();
                 }
-
-
             }
         });
 
         Confirm_button.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 Pw_match_check = PasswordText.getText().toString().equals(PasswordConfirmText.getText().toString());
@@ -186,10 +143,13 @@ public class RegisterActivity extends AppCompatActivity {
                 else if(!Pw_match_check){
                     Toast.makeText(getApplication(), "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show();
                 }
+                else if(!Security_code_check){
+                    Toast.makeText(getApplication(), "인증번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show();
+                }
                 else if(PasswordText.getText().length() == 0 || PasswordConfirmText.getText().length() == 0){
                     Toast.makeText(getApplication(), "입력하지 않은 항목이 있습니다.", Toast.LENGTH_SHORT).show();
                 }
-                else if(Pw_match_check && duplication_check_result.equals("true") && PasswordText.getText().length() > 0 && PasswordConfirmText.getText().length() > 0 ){
+                else if(Security_code_check && Pw_match_check && duplication_check_result.equals("true") && PasswordText.getText().length() > 0 && PasswordConfirmText.getText().length() > 0 ){
                     Intent intent = new Intent(RegisterActivity.this, additional_inform_register.class);
                     intent.putExtra("email", Email);
                     intent.putExtra("pw", PasswordConfirmText.getText().toString());
@@ -198,31 +158,203 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
-
+        //인증번호 확인
         EmailSecurityConfirmButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 String Security_code = EmailSecurityText.getText().toString();
+                ThreadTask_temp_pw_check<Object> result = getThreadTask_pw_check(Email, Security_code,"/temp_pw_check");
                 //security_Code를 서버로 전송하고
-                //Security_code_check true or false
-                //true이면 EmailSecurityInformText.setText(인증되었씁니다)로 바꿔주기
-                //true이면 EmailSecurityInformText.setText(인증번호가 일치하지않습니다)로 바꿔주기
+                result.execute(ip);
+
+                if(result.getResult() == 1){ //Security_code_check true or false
+                    //임시 비밀번호 일치 추가 진행 가능
+                    //true이면 EmailSecurityInformText.setText(인증되었씁니다)로 바꿔주기
+                    Security_code_check = true;
+                    Toast.makeText(RegisterActivity.this, "인증되었습니다.", Toast.LENGTH_SHORT).show();
+                    //EmailSecurityInformText.setText("인증되었습니다.");
+                    findViewById(R.id.email_security_code_layout).setVisibility(View.GONE);
+                    //true이면 EmailSecurityInformText.setText(인증번호가 일치하지않습니다)로 바꿔주기
+                }
+                else if(result.getResult() == 2){
+                    //시스템 에러
+                    Security_code_check = false;
+                    EmailSecurityInformText.setText("인증번호가 일치하지않습니다.");
+                }
+                else if(result.getResult() == 0){
+                    //시스템 에러
+                }
             }
         });
-
+        //인증번호 전송
         EmailSecurityCodeSendButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-               //인증번호 서버에 요철하기.
-                //요철하고 나면 EmailSecurityCodeSendButton.setText("재전송") 으로 바꿔주기
-                //요청하면 타이머 시작
-                startTimerTask();
+                //인증번호 서버에 요청하기.
+                Toast.makeText(RegisterActivity.this, "인증번호가 전송되었습니다.", Toast.LENGTH_SHORT).show();
+                ThreadTask<Object> result = getThreadTask(Email, "/temp_pw_create");
+                result.execute(ip);
+
+                if(result.getResult() == 1){
+                    //이메일양식에러
+                    Log.e("EmailSecurityCodeSendButton", Integer.toString(result.getResult()));
+                }
+                else if(result.getResult() == 2){
+                    //임시 비밀 번호 생성 및 이메일 처리상 오류
+                    Log.e("EmailSecurityCodeSendButton", Integer.toString(result.getResult()));
+                }
+                else if(result.getResult() == 3){
+                    //임시 비밀번호 생성 완료()
+                    //요철하고 나면 EmailSecurityCodeSendButton.setText("재전송") 으로 바꿔주기
+                    //요청하면 타이머 시작
+                    //Toast.makeText(RegisterActivity.this, "인증번호가 전송되었습니다.", Toast.LENGTH_SHORT).show();
+                    EmailSecurityCodeSendButton.setText("인증번호 재전송");
+                    startTimerTask();
+                }
+                else if(result.getResult() == 0){
+                    //시스템 에러
+                    Log.e("EmailSecurityCodeSendButton", Integer.toString(result.getResult()));
+                }
             }
         });
     }
 
-    private void startTimerTask(){
+    private ThreadTask<Object> getThreadTask(String email, String Router_name){
 
+        return new ThreadTask<Object>() {
+            private int response_result;
+            private String error_code;
+            @Override
+            protected void onPreExecute() {// excute 전에
+
+            }
+
+            @Override
+            protected void doInBackground(String... urls) throws IOException, JSONException {//background로 돌아갈것
+                HttpURLConnection con = null;
+                JSONObject sendObject = new JSONObject();
+                BufferedReader reader = null;
+
+                URL url = new URL(urls[0] +Router_name);
+
+                con = (HttpURLConnection) url.openConnection();
+
+                sendObject.put("email_address", email);
+
+                con.setRequestMethod("POST");//POST방식으로 보냄
+                con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
+                con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송
+                con.setRequestProperty("Accept", "application/json");//서버에 response 데이터를 html로 받음
+                con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
+                con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
+
+                OutputStream outStream = con.getOutputStream();
+                outStream.write(sendObject.toString().getBytes());
+                outStream.flush();
+
+                int responseCode = con.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+
+                    InputStream stream = con.getInputStream();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    byte[] byteBuffer = new byte[1024];
+                    byte[] byteData = null;
+                    int nLength = 0;
+                    while ((nLength = stream.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+                        baos.write(byteBuffer, 0, nLength);
+                    }
+                    byteData = baos.toByteArray();
+                    String response = new String(byteData);
+                    JSONObject responseJSON = new JSONObject(response);
+
+                    this.response_result = (Integer) responseJSON.get("key");
+                    this.error_code = (String) responseJSON.get("err_code");
+                }
+            }
+
+            @Override
+            protected void onPostExecute() {
+
+            }
+
+            @Override
+            public int getResult() {
+                return response_result;
+            }
+
+            @Override
+            public String getErrorCode() {
+                return error_code;
+            }
+        };
+    }
+
+    private ThreadTask_temp_pw_check<Object>getThreadTask_pw_check(String email, String security_code, String Router_name){
+
+        return new ThreadTask_temp_pw_check<Object>() {
+            private int response_result;
+            private String error_code;
+            //private String security_code;
+
+            @Override
+            protected void doInBackground(String... urls) throws IOException, JSONException {//background로 돌아갈것
+                HttpURLConnection con = null;
+                JSONObject sendObject = new JSONObject();
+                BufferedReader reader = null;
+
+                URL url = new URL(urls[0] +Router_name);
+
+                con = (HttpURLConnection) url.openConnection();
+                //this.security_code = security_code;
+                Log.e("Security_code", security_code);
+                sendObject.put("email_address", email);
+                sendObject.put("temp_password", security_code);
+
+                con.setRequestMethod("POST");//POST방식으로 보냄
+                con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
+                con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송
+                con.setRequestProperty("Accept", "application/json");//서버에 response 데이터를 html로 받음
+                con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
+                con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
+
+                OutputStream outStream = con.getOutputStream();
+                outStream.write(sendObject.toString().getBytes());
+                outStream.flush();
+
+                int responseCode = con.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+
+                    InputStream stream = con.getInputStream();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    byte[] byteBuffer = new byte[1024];
+                    byte[] byteData = null;
+                    int nLength = 0;
+                    while ((nLength = stream.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+                        baos.write(byteBuffer, 0, nLength);
+                    }
+                    byteData = baos.toByteArray();
+                    String response = new String(byteData);
+                    JSONObject responseJSON = new JSONObject(response);
+
+                    this.response_result = (Integer) responseJSON.get("key");
+                    this.error_code = (String) responseJSON.get("err_code");
+                }
+            }
+
+            @Override
+            public int getResult() {
+                return response_result;
+            }
+
+            @Override
+            public String getErrorCode() {
+                return error_code;
+            }
+        };
+    }
+
+    private void startTimerTask(){
+        stopTimerTask();
         timerTask = new TimerTask() {
             int timer = 180;
             int minutes;

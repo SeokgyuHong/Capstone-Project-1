@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -15,11 +17,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -49,6 +58,7 @@ import com.kakao.usermgmt.callback.UnLinkResponseCallback;
 import com.nhn.android.naverlogin.OAuthLogin;
 
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -78,6 +88,8 @@ import static androidx.constraintlayout.widget.ConstraintProperties.PARENT_ID;
 
 public class MainActivity<pirvate> extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, FragmentCallback{
 
+    private static final String CHANNEL_ID = "1000" ;
+
     private String [] notepad_title = new String[100];
     private String [] notepad_content = new String[100];
     private String[] temp = new String[2];
@@ -105,15 +117,23 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
     private ActionBar actionBar;
     private MaterialTextView toolbartext;
 
+    private SharedPreferences login_information_pref;
+    private String Email;
+    private Class<LoginActivity> loginActivity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Utils.setStatusBarColor(this, Utils.StatusBarcolorType.BLACK_STATUS_BAR);
         home_fragment = new Home_fragment();
         sensor_fragment = new Sensor_fragment();
         mypage_fragment = new Mypage_fragment();
+
+        login_information_pref = getSharedPreferences("login_information", Context.MODE_PRIVATE);
+        Email = login_information_pref.getString("email", "");
 
         ip = getString(R.string.server_ip);
 
@@ -141,17 +161,17 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
                             case R.id.tab1:
                                 //Toast.makeText(getApplicationContext(), "1", Toast.LENGTH_SHORT).show();
                                 getSupportFragmentManager().beginTransaction().replace(R.id.container, home_fragment).commit();
-                                toolbartext.setText("홈");
+                                toolbartext.setText("Home");
                                 return true;
                             case R.id.tab2 :
                                 //Toast.makeText(getApplicationContext(), "2", Toast.LENGTH_SHORT).show();
                                 getSupportFragmentManager().beginTransaction().replace(R.id.container, sensor_fragment).commit();
-                                toolbartext.setText("센서");
+                                toolbartext.setText("Sensor");
                                 return true;
                             case R.id.tab3 :
                                 //Toast.makeText(getApplicationContext(), "3", Toast.LENGTH_SHORT).show();
                                 getSupportFragmentManager().beginTransaction().replace(R.id.container, mypage_fragment).commit();
-                                toolbartext.setText("마이 페이지");
+                                toolbartext.setText("Mypage");
                                 return true;
                         }
                         return false;
@@ -160,83 +180,151 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
         );
         Navinit(); // navigation drawer 초기화
 
-
         //getHashKey(); // fire base 해쉬 값 받아오기
+
+
+        //createNotificationChannel();
+
 
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( MainActivity.this,  new OnSuccessListener<InstanceIdResult>() {
             @Override
             public void onSuccess(InstanceIdResult instanceIdResult) {
-                Object newToken = instanceIdResult.getToken(); //토큰 값이 바뀌면 new token call back
+                String newToken = instanceIdResult.getToken(); //토큰 값이 바뀌면 new token call back
                 Log.e("Fire base Token", newToken.toString());
                 System.out.println("Fire base Token :" + newToken);
                 //new JSONTask(newToken).execute("http://10.0.2.2:3000/post");//AsyncTask 시작시킴
                 makeThread(newToken);
+                int response = send_token_response(Email, newToken);
+
+                //getHeadup();
+                if(response == 1){
+                    Log.e("토큰 전송 : ", "이메일 형식 에러");
+                }
+                else if(response == 2){
+                    Log.e("토큰 전송 : ", "성공");
+                }
+                else if(response == 3){
+                    Log.e("토큰 전송 : ", "실패3");
+                }
+                else if(response == 4){
+                    Log.e("토큰 전송 : ", "실패4");
+                }
+                else if(response == 0){
+                    Log.e("토큰 전송 : ", "시스템에러");
+                }
+
             }
 
         });
 
-//        //this.InitializeNotepadData();
-//        recyclerView = (RecyclerView) findViewById(R.id.rv);
-//        layoutManager = new LinearLayoutManager(this);
-//        recyclerView.setLayoutManager(layoutManager);
-//
-//        recycleAdaptors = new RecycleAdaptors(notepadDataList);
-//
-//        recyclerView.setAdapter(recycleAdaptors);
-//
-//        SwipeHelper swipeHelper = new SwipeHelper(recycleAdaptors, this, recyclerView) {
-//
-//            @SuppressLint("UseCompatLoadingForDrawables")
-//            @Override
-//            public void instantiateUnderlayButton(RecyclerView.ViewHolder viewHolder, List<UnderlayButton> underlayButtons) {
-//                underlayButtons.add(new SwipeHelper.UnderlayButton(
-//                        "삭제",
-//                        getResources().getDrawable(R.drawable.ic_delete_24px, null),
-//                        R.drawable.ic_delete_24px,
-//                        Color.parseColor("#FF3C30"),
-//                        new SwipeHelper.UnderlayButtonClickListener() {
-//                            @Override
-//                            public void onClick(int pos) {
-//                                // TODO: onDelete
-//                            }
-//                        }
-//                )
-//                );
-//                wrtieToFile();
-//            }
-//
-//        };
-//
-//       // ItemTouchHelper 생성
-//        //helper = new ItemTouchHelper(new ItemTouchHelperCallback(recycleAdaptors, Title_filename, Content_filename ));
-//        //RecyclerView에 ItemTouchHelper 붙이기
-//
-//        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeHelper);
-//        itemTouchHelper.attachToRecyclerView(recyclerView);
-//
-//        //swipeHelper.attachToRecyclerView(recyclerView);
-//
-//        MaterialButton button = (MaterialButton) findViewById(R.id.create_button);
-//        button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (i >= 100) { // 수용가능한 메모 개소
-//                    Toast.makeText(MainActivity.this, "메모는 최대 8개 입니다.", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    Intent intent = new Intent(MainActivity.this, SubActivity.class);
-//                    startActivity(intent);
-//                }
-//            }
-//
-//        });
+    }
+    private void getHeadup(){
+        Intent snoozeIntent = new Intent(this, MainActivity.class);
+        snoozeIntent.setAction("ACTION_SNOOZE");
+        snoozeIntent.putExtra("EXTRA_NOTIFICATION_ID", 0);
+        PendingIntent snoozePendingIntent =
+                PendingIntent.getBroadcast(this, 0, snoozeIntent, 0);
 
-        // 뒤로가기 누르면 세션이 그대로 남아있음 리다이렉트 해야함
-        //Recycle view 써서 swipe edit delete 만들기
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_menu_slideshow)
+                .setContentTitle("My notification")
+                .setContentText("Much longer text that cannot fit one line...")
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText("Much longer text that cannot fit one line..."))
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setDefaults(Notification.DEFAULT_VIBRATE)
+                .setFullScreenIntent(snoozePendingIntent, true)
+                .setAutoCancel(true);
 
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+        // notificationId is a unique int for each notification that you must define
+        int notificationId = 10;
+        notificationManager.notify(notificationId, builder.build());
+    }
+
+    private int send_token_response(String request_email, String token){
+
+        ThreadTask<Object> result = new ThreadTask<Object>() {
+
+            String Request_email = request_email;
+            String Token = token;
+
+            private int response_result;
+            private String error_code;
+
+            @Override
+            protected void onPreExecute() {// excute 전에
+
+            }
+
+            @Override
+            protected void doInBackground(String... urls) throws IOException, JSONException {//background로 돌아갈것
+                HttpURLConnection con = null;
+                JSONObject sendObject = new JSONObject();
+                BufferedReader reader = null;
+
+                URL url = new URL(urls[0] +"/firebase_token_save");
+                con = (HttpURLConnection) url.openConnection();
+
+                sendObject.put("email_address",Request_email);
+                sendObject.put("fcm_token",Token);
+
+                Log.e("토큰 전송", "토큰 전송 합니당.");
+                con.setRequestMethod("POST");//POST방식으로 보냄
+                con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
+                con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송
+                con.setRequestProperty("Accept", "application/json");//서버에 response 데이터를 html로 받음
+                con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
+                con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
+
+                OutputStream outStream = con.getOutputStream();
+                outStream.write(sendObject.toString().getBytes());
+                outStream.flush();
+                Log.e("토큰 전송", "토큰 전송 합니당.");
+                int responseCode = con.getResponseCode();
+                if(responseCode == HttpURLConnection.HTTP_OK){
+                    InputStream stream = con.getInputStream();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    byte[] byteBuffer = new byte[1024];
+                    byte[] byteData = null;
+                    int nLength = 0;
+
+                    while ((nLength = stream.read(byteBuffer, 0, byteBuffer.length)) != -1){
+                        baos.write(byteBuffer, 0, nLength);
+                    }
+                    byteData = baos.toByteArray();
+
+                    String response = new String(byteData);
+
+                    JSONObject responseJSON = new JSONObject(response);
+                    this.response_result = (Integer) responseJSON.get("result");
+                }
+            }
+
+            @Override
+            protected void onPostExecute() {
+
+            }
+
+            @Override
+            public int getResult() {
+                return response_result;
+            }
+
+            @Override
+            public String getErrorCode() {
+                return error_code;
+            }
+
+        };
+
+        result.execute(ip);
+        return result.getResult();
     }
 
     public void makeThread(Object newToken){
-        new ThreadTask<String>() {
+        ThreadTask<Object> result = new ThreadTask<Object>() {
             Object NewToken = newToken;
             @Override
             protected void onPreExecute() {// excute 전에
@@ -320,7 +408,19 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
             protected void onPostExecute() {
 
             }
-        }.execute(ip);
+
+            @Override
+            public int getResult() {
+                return 0;
+            }
+
+            @Override
+            public String getErrorCode() {
+                return null;
+            }
+
+        };
+        result.execute(ip);
 
     }
     public void wrtieToFile(){
@@ -407,24 +507,6 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
 //        NavigationView navigationView = findViewById(R.id.nav_view);
 //        navigationView.setNavigationItemSelectedListener(this);
     }
-
-   /* @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        switch (item.getItemId()){
-
-            case R.id.action_save:
-                Toast.makeText(this, "save", Toast.LENGTH_SHORT).show();
-            default :
-                return super.onOptionsItemSelected(item);
-        }
-    }*/
 
     @Override
     public void onBackPressed() {
@@ -521,6 +603,22 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
 }

@@ -1,19 +1,31 @@
 package com.example.myapplication;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.net.URLDecoder;
+
 public class FirebaseToken extends FirebaseMessagingService {
     private String refreshedToken = null;
+    private static final String CHANNEL_ID = "1000" ;
+//    private static NotificationManagerCompat notificationManager;
+//    private static NotificationChannel channel;
+//
     /* 토큰이 새로 만들어질때나 refresh 될때  */
     @Override
     public void onNewToken(String s) {
@@ -33,20 +45,63 @@ public class FirebaseToken extends FirebaseMessagingService {
         if (remoteMessage.getNotification() != null) {
             Log.e("포그라운드", "From: " + remoteMessage.getFrom());
             Log.e("포그라운드", "Message Notification Body: " + remoteMessage.getNotification().getBody());
-
+            createNotificationChannel();
+            getHeadup();
             String messageBody = remoteMessage.getNotification().getBody();
             String messageTitle = remoteMessage.getNotification().getTitle();
+            //sendNotification(messageBody,messageTitle);
             //Toast.makeText(MainActivity.class, remoteMessage.getNotification().getTitle(), Toast.LENGTH_SHORT).show();
         }
         else if (remoteMessage.getData().size() > 0) {
             Log.e("백그라운드", "From: " + remoteMessage.getFrom());
             Log.e("백그라운드", "Message Notification Body: " + remoteMessage.getNotification().getBody());
+            //createNotificationChannel();
+            //getHeadup();
 
             String messageBody = remoteMessage.getNotification().getBody();
             String messageTitle = remoteMessage.getNotification().getTitle();
+
         }
     }
+    private void getHeadup(){
+        Intent snoozeIntent = new Intent(this, MainActivity.class);
+        snoozeIntent.setAction("ACTION_SNOOZE");
+        snoozeIntent.putExtra("EXTRA_NOTIFICATION_ID", 0);
+        PendingIntent snoozePendingIntent =
+                PendingIntent.getBroadcast(this, 0, snoozeIntent, 0);
 
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_menu_slideshow)
+                .setContentTitle("My notification")
+                .setContentText("Much longer text that cannot fit one line...")
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText("Much longer text that cannot fit one line..."))
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setDefaults(Notification.DEFAULT_VIBRATE)
+                .setFullScreenIntent(snoozePendingIntent, false)
+                .setAutoCancel(true);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+        // notificationId is a unique int for each notification that you must define
+        int notificationId = 10;
+        notificationManager.notify(notificationId, builder.build());
+    }
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);//NotificationManager.class
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
 //    private void sendNotification(String messageBody, String messageTitle) {
 //        //////////////////////////// 포그라운드 및 백그라운드 푸시알림 처리 ////////////////////////////
 //        Intent intent = new Intent(this, MainActivity.class);
@@ -54,8 +109,11 @@ public class FirebaseToken extends FirebaseMessagingService {
 //        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
 //                PendingIntent.FLAG_ONE_SHOT);
 //
+//        CharSequence name = getString(R.string.channel_name);
+//        String description = getString(R.string.channel_description);
+//        int importance = NotificationManager.IMPORTANCE_HIGH;
 //        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//        NotificationChannel mChannel = new NotificationChannel(id, name, importance);
+//        NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
 //
 //        mChannel.setDescription(description);
 //        mChannel.enableLights(true);
@@ -67,16 +125,16 @@ public class FirebaseToken extends FirebaseMessagingService {
 //        String CHANNEL_ID = "my_channel_02";
 //
 //        try {
-//            Notification notification = new Notification.Builder(MyFBMessageService.this)
+//            Notification notification = new Notification.Builder(FirebaseToken.this)
 //                    .setContentTitle(URLDecoder.decode(messageTitle, "UTF-8"))
 //                    .setContentText(URLDecoder.decode(messageBody, "UTF-8"))
-//                    .setSmallIcon(R.drawable.icon)
+//                    .setSmallIcon(R.drawable.ic_menu_slideshow)
 //                    .setChannelId(CHANNEL_ID)
 //                    .setContentIntent(pendingIntent)
 //                    .build();
-//
-//            mediaPlayer = MediaPlayer.create(this, R.raw.alarm);
-//            mediaPlayer.start();
+////
+////            MediaPlayer mediaPlayer = MediaPlayer.create(this, R.drawable.ic_menu_slideshow);
+////            mediaPlayer.start();
 //
 //            mNotificationManager.notify(notifyID, notification);
 //        } catch (Exception e) {

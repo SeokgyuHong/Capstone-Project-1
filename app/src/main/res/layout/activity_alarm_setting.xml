@@ -7,8 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:openDrawer="start"
-    android:background="@drawable/edge6">
+    tools:openDrawer="start">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -37,7 +36,7 @@
                         android:layout_height="58dp"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:text="Home"
+                        android:text="알람 설정"
                         android:textColor="@color/login_font"
                         android:textSize="20sp"
                         android:textStyle="bold"
@@ -60,8 +59,8 @@
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:id="@+id/container"
-                    android:orientation="vertical">
-
+                    android:orientation="vertical"
+                    android:background="@drawable/edge6">
                 </LinearLayout>
 
                 <LinearLayout
@@ -83,38 +82,8 @@
 
 
 
-       <!--  <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/MainActivity_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="58dp"
-            android:background="@drawable/edge7"
-            >
 
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="58dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialTextView"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:text="홈"
-                android:gravity="center"
-                android:layout_gravity ="center"
-                />
-        </com.google.android.material.appbar.MaterialToolbar>-->
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <!--
-     <com.google.android.material.navigation.NavigationView
-         android:id="@+id/nav_view"
-         android:layout_width="wrap_content"
-         android:layout_height="match_parent"
-         android:layout_gravity="start"
-         android:fitsSystemWindows="true"
-         app:headerLayout="@layout/nav_header_main"
-         app:menu="@menu/activity_main_drawer" />
--->
 </androidx.drawerlayout.widget.DrawerLayout>

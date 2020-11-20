@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RegisterActivity">
+
+    <LinearLayout
+        android:id="@+id/materialTextView"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/register_toolbar_required_information"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            >
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="58dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/materialTextView"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:text="센서등록"
+                android:gravity="center"
+                android:layout_gravity ="center"
+                />
+        </com.google.android.material.appbar.MaterialToolbar>
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="360dp"
+        android:layout_height="600dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="20dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/materialTextView"
+        app:layout_constraintVertical_bias="0.35"
+
+        tools:ignore="ExtraText">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="68dp"
+                android:orientation="horizontal">
+
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/institution_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="58dp"
+                    android:background="@drawable/edge4"
+                    android:gravity="left|center"
+                    android:hint="Wi-Fi MAC 주"
+                    android:inputType="textEmailAddress"
+                    android:paddingLeft="13sp"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="430dp"
+                android:background="@drawable/edge13">
+                android:orientation="vertical"
+                <LinearLayout
+                    android:id="@+id/linearLayout3"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:orientation="horizontal"
+
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="140dp"
+                        android:layout_height="80dp"
+                        android:paddingLeft="25dp"
+                        android:paddingTop="10dp"
+                        android:text="센서 목록"
+                        android:textSize="25sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="200dp"
+                        android:layout_height="80dp">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="294dp"
+                            android:layout_height="25dp"
+                            android:background="@drawable/edge11" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+
+                    android:layout_width="290dp"
+                    android:layout_height="220dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    tools:layout_editor_absoluteY="86dp">
+
+                    <TextView
+                        android:id="@+id/textView1"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_weight="4"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="20dp"
+                        android:text="센서 등"
+                        android:textColor="#000000"
+                        android:textSize="16dp" />
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_weight="4"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="20dp"
+                        android:text="정보 수"
+                        android:textColor="#000000"
+                        android:textSize="16dp" />
+
+                    <TextView
+                        android:id="@+id/textView3"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_weight="4"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="20dp"
+                        android:text="센서 연"
+                        android:textColor="#000000"
+                        android:textSize="16dp" />
+
+                    <TextView
+                        android:id="@+id/textView4"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_weight="4"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="20dp"
+                        android:text="센서 삭제"
+                        android:textColor="#000000"
+                        android:textSize="16dp" />
+                </LinearLayout>
+
+
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/confirm_button2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="확 인"
+                android:textSize="18sp"
+                android:textColor="@color/colorAccent"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,28 @@
+{
+  "name": "capstone-project-1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SeokgyuHong/Capstone-Project-1.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SeokgyuHong/Capstone-Project-1/issues"
+  },
+  "homepage": "https://github.com/SeokgyuHong/Capstone-Project-1#readme",
+  "dependencies": {
+    "ejs": "^3.1.5",
+    "express": "^4.17.1",
+    "firebase-admin": "^9.4.1",
+    "mariadb": "^2.5.1",
+    "nodemailer": "^6.4.16",
+    "pm2": "^4.5.0",
+    "socket.io": "^3.0.3"
+  }
+}

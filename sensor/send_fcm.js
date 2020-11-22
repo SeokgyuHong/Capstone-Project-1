@@ -9,8 +9,8 @@ admin.initializeApp({
 
 function send_fcm(phone_number, latitude,longitude,board_nickname,data_array,fcm_target_token,alarm_time)
 {
-  let title1 = board_nickname+'에서 낙상사고발생'
-  let body1 = board_nickname+'에서 '+alarm_time+'에 낙상사고발생'
+  let title1 = alarm_time+'에 ' +board_nickname+'에서 낙상사고발생'
+  let body1 = '지금 빨리 상태를 확인하세요!!!'
   //console.log(latitude)
   //console.log(longitude)
   //console.log(data_array);

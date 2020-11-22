@@ -129,7 +129,7 @@ module.exports.check_sensor_list =  function(req,res){
             }
             else{
               console.log('센서 있음');
-              res.send(results); // 등록된 센서 json 넘겨줌
+              res.send({'key':1, 'list':results}); // 등록된 센서 json 넘겨줌
               connection.release();
             }
         }

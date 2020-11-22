@@ -6,9 +6,9 @@ const path = require('path');
 const socketIO = require('socket.io');
 const bodyparser = require('body-parser');
 const {send_mail}= require('./send_mail');
-const {send_fcm} = require('./fcm/send_fcm');
-const session = require('express-session');
-const session_info = require('./secret_info/session_info'); //세션암호화든 정보 저장
+//const {send_fcm} = require('./sensor/send_fcm');
+//const session = require('express-session');
+//const session_info = require('./secret_info/session_info'); //세션암호화든 정보 저장
 //var {save_login_info} = require('./login');
 //fcm 정보
 const fcm_token_save = require('./fcm/fcm_token_save');
@@ -32,15 +32,22 @@ const password_modification = require('./account_information/password_modificati
 
 
 //센서 생성 수정 삭제 리스트 
-const sensor_crud = require('./sensor/sensor_crud');
+const sensor_connect = require('./sensor/sensor_connect');
+const sensor_modification = require('./sensor/sensor_modification'); 
+const sensor_deletion = require('./sensor/sensor_deletion');
+const sensor_list = require('./sensor/sensor_list');
+//센서 온오프
+const sensor_on_off = require('./sensor/sensor_on_off');
 
+//fcm전송
+const send_fcm = require('./sensor/send_fcm');
 //From 센서 To 클라이언트
-const socket = require('./socket/socket'); //웹소켓을 통해 전송 
+//const socket = require('./socket/socket'); //웹소켓을 통해 전송 
 
-session_json = session_info.session_info; //세션정보
+//session_json = session_info.session_info; //세션정보
 app.use(bodyparser.json()) //미들웨어 
 app.use(express.urlencoded({extended:false}))
-app.use(session(session_json));
+//app.use(session(session_json));
 
 
 app.engine('html', require('ejs').renderFile);
@@ -53,11 +60,24 @@ app.get('/',(req,res)=>{
 // app.post('/nodemailerTest',send_mail);
 //app.post('/notification',send_fcm);
 
-//센서등록
-app.post('/sensor_regi',(req,res)=>{sensor_crud.check_and_sensor_crud(req,res,'regi')});
-app.post('/sensor_del',(req,res)=>{sensor_crud.check_and_sensor_crud(req,res,'del')});
-app.post('/sensor_update_location',(req,res)=>{sensor_crud.check_and_sensor_crud(req,res,'modi')});
-app.post('/sensor_list',(req,res)=>{sensor_crud.check_sensor_list(req,res)});
+//센서등록 
+app.post('/sensor_duplication_check',sensor_connect.sensor_duplication_check);
+app.post('/sensor_registration',sensor_connect.sensor_registration);
+
+//센서삭제 
+app.post('/sensor_deletion',sensor_deletion.sensor_deletion);
+//센서 온 오프 
+app.post('/sensor_on',sensor_on_off.sensor_on);
+app.post('/sensor_off',sensor_on_off.sensor_off);
+
+//센서리스트요청
+app.post('/sensor_list_request',sensor_list.sensor_list_request);
+//센서수정
+app.post('/sensor_modification',sensor_modification.sensor_modification);
+
+
+app.post('/send_fcm',send_fcm.fall_alarm);
+
 
 //일반계정 회원가입
 app.post('/id_duplication_check',normal_sign_up.id_duplication_check); //아이디 중복여부 체크
@@ -68,9 +88,6 @@ app.post('/normal_sign_up',normal_sign_up.normal_sign_up); //일반계정 회원
 //소셜계정 회원가입
 //app.post('/id_duplication_check',normal_sign_up.id_duplication_check); //소설계정 회원가입 
 app.post('/social_sign_up',social_sign_up.social_sign_up);
-
-
-
 app.post('/social_sign_in',social_sign_in.social_sign_in); //소셜계정 로그인
 
 //일반계정 로그인
@@ -78,7 +95,7 @@ app.post('/normal_sign_in',normal_sign_in.normal_sign_in); //일반계정 로그
 
 
 
-app.post('/firebase_token_save',fcm_token_save.fcm_token_save); //fcm 수신을 위한 토큰 디비에 저장
+//app.post('/firebase_token_save',fcm_token_save.fcm_token_save); //fcm 수신을 위한 토큰 디비에 저장
 
 //로그아웃
 app.post('/sign_out',sign_out.sign_out);

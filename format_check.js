@@ -39,5 +39,13 @@ module.exports.company_check = (company_number)=>{ //사업자번호 정규식 �
 // Wifi Mac address 포맷 체크
 module.exports.checkValidMacAddress = (addr)=>{
     var re = /^([0-9A-F]{2}[:-]){5}([0-9A-F]{2})$/;
-    return re.test(addr);
+    //return re.test(addr);
+    if(!re.test(addr))
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 };

@@ -30,6 +30,7 @@ function send_fcm(phone_number, latitude,longitude,board_nickname,data_array,fcm
     //data2:data_array
 
   }
+  console.log(fcm_message)
   return new Promise((resolve,reject)=>{
     admin.messaging().send(fcm_message).then((res)=>{
       console.log('Successfully sent fcm message:',res);

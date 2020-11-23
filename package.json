@@ -24,6 +24,8 @@
     "nodemailer": "^6.4.16",
     "pm2": "^4.5.0",
     "request": "^2.88.2",
-    "socket.io": "^3.0.3"
+    "request-promise-native": "^1.0.9",
+    "socket.io": "^3.0.3",
+    "xml-js": "^1.6.11"
   }
 }

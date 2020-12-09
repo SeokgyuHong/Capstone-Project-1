@@ -10,6 +10,10 @@
     <color name="white">#FFFFFF</color>
     <color name="gray">#D9ECEEF7</color>
     <color name="colorGrid">#D9ECEEF7</color>
+
+    <color name="progressbar4">#FF9800</color>
+    <color name="progressbar5">#FF6F00</color>
+    <color name="progressbar6">#FF3C00</color>
     <!-- #2196F3-->
     <!-- primary color 민트색 00BCD4 -->
 </resources>

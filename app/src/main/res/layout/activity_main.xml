@@ -37,7 +37,7 @@
                         android:layout_height="58dp"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:text="Home"
+                        android:text="안녕하세요!"
                         android:textColor="@color/login_font"
                         android:textSize="20sp"
                         android:textStyle="bold"

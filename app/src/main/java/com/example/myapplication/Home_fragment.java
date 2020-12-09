@@ -1,7 +1,9 @@
 package com.example.myapplication;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -13,6 +15,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.dinuscxj.progressbar.CircleProgressBar;
 
 import java.util.List;
 
@@ -32,13 +36,12 @@ public class Home_fragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private RecyclerView recyclerView;
-    //private RecyclerView.Adapter recycle_adapter;
-    private RecyclerView.LayoutManager layoutManager;
-    private RecyclerView.LayoutManager layoutManager2;
+    private CircleProgressBar circleProgressBar;
+    private CircleProgressBar Fall_down_bar;
 
-    private RecycleAdaptors recycleAdaptors;
-
+    private SharedPreferences sensor_status_pref;
+    private SharedPreferences.Editor sensor_status_editor;
+    private Thread thread;
 
     public Home_fragment() {
         // Required empty public constructor
@@ -77,20 +80,71 @@ public class Home_fragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_home_fragment, container, false);
+        feedMultiple(v);
 
-        recyclerView = (RecyclerView) v.findViewById(R.id.Recycler_view);
-        layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
-        recycleAdaptors = new RecycleAdaptors();
-
-        recycleAdaptors.addItem(new Sensor_list("sensor1", "3층 301호 화장실"));
-        recycleAdaptors.addItem(new Sensor_list("sensor2", "3층 302호 화장실"));
-        recycleAdaptors.addItem(new Sensor_list("sensor3", "3층 303호 화장실"));
-        recycleAdaptors.addItem(new Sensor_list("sensor4", "3층 304호 화장실"));
-
-        recyclerView.setAdapter(recycleAdaptors);
 
         return v;
+    }
+    private void setCircleProgressBar(View v){
+        sensor_status_pref = getActivity().getSharedPreferences("Sensor_status", Activity.MODE_PRIVATE);
+        sensor_status_editor = sensor_status_pref.edit();
+
+//        int sensor_total_count = Integer.parseInt(sensor_status_pref.getString("sensor_total_count", "0"));
+//        int sensor_on_count = Integer.parseInt(sensor_status_pref.getString("sensor_on_count", "0"));
+       // int falldown_count = Integer.parseInt(sensor_status_pref.getString("falldown_count", "0"));
+        int sensor_total_count = 4;
+        int sensor_on_count = 3 ;
+        int falldown_count = 3;
+
+        float sensor_rate = (float) sensor_on_count /(float)sensor_total_count;
+        float falldown_reate = (float) ((float)falldown_count / 5.0);
+        Log.e("sensor_rate", Float.toString(sensor_rate));
+//        sensor_status_editor = sensor_status_pref.edit();
+//        sensor_status_editor.putString("sensor_on_count" ,Integer.toString(sensor_on_count) );
+//        sensor_status_editor.commit();
+
+        circleProgressBar = v.findViewById(R.id.contected_sensor);
+        circleProgressBar.setProgress((int) (sensor_rate * 100));
+        circleProgressBar.setProgressFormatter((progress, max) -> {
+            final String DEFAULT_PATTERN = "%d/%d개"   ;
+            //return String.format(DEFAULT_PATTERN, (int) ((float) progress /(float) max * 100));
+            return String.format(DEFAULT_PATTERN, sensor_on_count, sensor_total_count);
+        });
+
+        Fall_down_bar = v.findViewById(R.id.fall_down_count);
+        Fall_down_bar.setProgress((int) (falldown_reate * 100));
+        Fall_down_bar.setProgressFormatter((progress, max) -> {
+            final String DEFAULT_PATTERN = "%d번"   ;
+            //return String.format(DEFAULT_PATTERN, (int) ((float) progress /(float) max * 100));
+            return String.format(DEFAULT_PATTERN, falldown_count);
+        });
+    }
+
+    private void feedMultiple(View v) {
+
+        if (thread != null) thread.interrupt();
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                setCircleProgressBar(v);
+            }
+        };
+        thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    if(getActivity() == null)
+                        return;
+                    getActivity().runOnUiThread(runnable);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ie) {
+                        ie.printStackTrace();
+                    }
+                }
+            }
+        });
+        thread.start();
     }
 
 }

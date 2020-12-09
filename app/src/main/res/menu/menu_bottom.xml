@@ -3,7 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
-
     <item
         android:id="@+id/tab1"
         app:showAsAction="ifRoom"
@@ -16,6 +15,12 @@
         android:enabled="true"
         android:icon="@drawable/ic_settings_input_antenna_24px"
         android:title="센서" />
+    <item
+        android:id="@+id/tab4"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:icon="@drawable/ic_free_icon_hospital_3809392"
+        android:title="근처 병원" />
     <item
         android:id="@+id/tab3"
         app:showAsAction="ifRoom"

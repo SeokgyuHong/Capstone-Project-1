@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.myapplication.Thread.ThreadTask;
+import com.example.myapplication.Thread.ThreadTask_temp_pw_check;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.textview.MaterialTextView;
 
@@ -91,14 +93,14 @@ public class RegisterActivity extends AppCompatActivity {
         //5. 이메일과 비밀번호, 재확인이 다 입력되어ㅣㅆ지 않으면 alert창 띄우기
         //6. 전부다 완료시 다음 창으로 넘어감.
 
-        //이메일 중복체크
+        /**이메일 중복체크*/
         EmailcheckButton.setOnClickListener(new View.OnClickListener() {
             @Override
 
             public void onClick(View v) {
                 Email = EmailText.getText().toString();
 
-                //서버로 Email 전송하기
+                /**서버로 Email 전송하기*/
                 if (Email.contains("@")) {
                     if(Patterns.EMAIL_ADDRESS.matcher(Email).matches()){
                         ThreadTask<Object> result = getThreadTask(Email, "/id_duplication_check");
@@ -111,7 +113,7 @@ public class RegisterActivity extends AppCompatActivity {
                         else if(result.getResult() == 2){
                             Log.e("duplication Check", duplication_check_result);
                             duplication_check_result = "true";
-                            Toast.makeText(getApplication(), "등록된 계정이 없습니다.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplication(), "사용가능한 이메일입니다.", Toast.LENGTH_SHORT).show();
                             findViewById(R.id.email_security_code_layout).setVisibility(View.VISIBLE);
                         }
                         else if(result.getResult() == 1){
@@ -130,6 +132,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
+        /**회원가입 확인*/
         Confirm_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -158,7 +161,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
-        //인증번호 확인
+        /**인증번호 확인*/
         EmailSecurityConfirmButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -191,7 +194,8 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //인증번호 서버에 요청하기.
-                Toast.makeText(RegisterActivity.this, "인증번호가 전송되었습니다.", Toast.LENGTH_SHORT).show();
+
+
                 ThreadTask<Object> result = getThreadTask(Email, "/temp_pw_create");
                 result.execute(ip);
 
@@ -208,8 +212,10 @@ public class RegisterActivity extends AppCompatActivity {
                     //요철하고 나면 EmailSecurityCodeSendButton.setText("재전송") 으로 바꿔주기
                     //요청하면 타이머 시작
                     //Toast.makeText(RegisterActivity.this, "인증번호가 전송되었습니다.", Toast.LENGTH_SHORT).show();
-                    EmailSecurityCodeSendButton.setText("인증번호 재전송");
+                    Toast.makeText(RegisterActivity.this, "인증번호가 전송되었습니다.", Toast.LENGTH_SHORT).show();
                     startTimerTask();
+                    EmailSecurityCodeSendButton.setText("인증번호 재전송");
+
                 }
                 else if(result.getResult() == 0){
                     //시스템 에러

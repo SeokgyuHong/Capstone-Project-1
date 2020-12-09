@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="@drawable/edge2"
+        android:id="@+id/Hospital_list"
+        android:orientation="horizontal">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="30dp"
+            android:layout_height="90dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_height="30dp"
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
+                android:text="경북대학교 병원"
+                android:textStyle="bold"
+                android:id="@+id/Hospital_name_text"
+                android:gravity="center_vertical"
+                android:textColor="@color/login_font"
+                android:textSize="18sp"/>
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_height="30dp"
+                android:id="@+id/Hospital_location_text"
+                android:layout_width="match_parent"
+                android:text="대구 광역시 중구삼덕동2가 동덕로 130"
+                android:gravity="center_vertical"
+                android:textColor="@color/login_font"
+                android:textSize="16sp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal">
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_height="40dp"
+                    android:layout_width="100dp"
+                    android:background="@drawable/edge2"
+                    android:text="응급실"
+                    android:textStyle="bold"
+                    android:id="@+id/Hospital_category_text"
+                    android:gravity="center"
+                    android:textColor="@color/login_font"
+                    android:textSize="18sp"/>
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_height="40dp"
+                    android:layout_width="130dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/edge2"
+                    android:text="24시간 영업"
+                    android:textStyle="bold"
+                    android:id="@+id/Hospital_time_text"
+                    android:gravity="center"
+                    android:textColor="@color/login_font"
+                    android:textSize="18sp"/>
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_marginLeft="10dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/Hospital_phone_num_text"
+                    android:layout_width="100dp"
+                    android:background="@drawable/edge15"
+                    android:text="전화걸기"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="18sp"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

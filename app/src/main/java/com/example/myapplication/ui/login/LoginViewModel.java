@@ -7,10 +7,8 @@ import androidx.lifecycle.ViewModel;
 import android.util.Log;
 import android.util.Patterns;
 
-import com.example.myapplication.ThreadTask;
+import com.example.myapplication.Thread.ThreadTask;
 import com.example.myapplication.data.LoginRepository;
-import com.example.myapplication.data.Result;
-import com.example.myapplication.data.model.LoggedInUser;
 import com.example.myapplication.R;
 
 import org.json.JSONException;

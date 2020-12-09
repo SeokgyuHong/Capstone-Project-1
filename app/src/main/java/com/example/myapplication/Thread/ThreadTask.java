@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.Thread;
 
 import org.json.JSONException;
 

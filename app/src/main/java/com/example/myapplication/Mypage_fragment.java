@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.myapplication.Thread.ThreadTask;
 import com.example.myapplication.ui.login.LoginActivity;
 import com.google.android.material.textview.MaterialTextView;
 import com.kakao.network.ErrorResult;
@@ -31,13 +31,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -55,6 +52,7 @@ public class Mypage_fragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     private MaterialTextView logoutView;
     private MaterialTextView Account_delete_View;
+    private MaterialTextView userinform;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -141,6 +139,15 @@ public class Mypage_fragment extends Fragment {
         //first_naver_login = login_log_pref.getString("first_naver_login","true");
 
         //mcontext = container.getContext();
+
+        userinform = (MaterialTextView)v.findViewById(R.id.userinform);
+        userinform.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), User_inform.class);
+                startActivity(intent);
+            }
+        });
 
         logoutView = (MaterialTextView)v.findViewById(R.id.logout_button);
         logoutView.setOnClickListener(new View.OnClickListener() {

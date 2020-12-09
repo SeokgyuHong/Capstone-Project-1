@@ -34,7 +34,8 @@ import android.widget.Toast;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.RegisterActivity;
-import com.example.myapplication.ThreadTask;
+import com.example.myapplication.Thread.ThreadTask;
+import com.example.myapplication.Tutorial;
 import com.example.myapplication.Utils;
 import com.example.myapplication.additional_inform_register;
 import com.example.myapplication.data.LoginRepository;
@@ -46,6 +47,7 @@ import com.kakao.auth.authorization.accesstoken.AccessToken;
 import com.kakao.network.ErrorResult;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.MeV2ResponseCallback;
+import com.kakao.usermgmt.callback.UnLinkResponseCallback;
 import com.kakao.usermgmt.response.MeV2Response;
 import com.kakao.usermgmt.response.model.Profile;
 import com.kakao.usermgmt.response.model.UserAccount;
@@ -125,9 +127,18 @@ public class LoginActivity extends AppCompatActivity  {
     * */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme);
+
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.activity_login);
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//            }
+//        }, 15000);
+//        setTheme(R.style.AppTheme);
         Utils.setStatusBarColor(this, Utils.StatusBarcolorType.BLACK_STATUS_BAR);
 
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory()).get(LoginViewModel.class);
@@ -189,25 +200,6 @@ public class LoginActivity extends AppCompatActivity  {
                             else if(result.getResult() == 2){
                                 //등록되지 않은 이메일 // 회원가입 페이지로
                                 //실제 구현 다 되고나면 ㅇ여기 넣기
-//                                if(first_naver_login.equals("true")){
-                                    Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
-                                    intent.putExtra("email", Email);
-                                    intent.putExtra("login_type","naver");
-
-                                    login_log_pref = getSharedPreferences("SNS_login_log", Activity.MODE_PRIVATE);
-                                    login_log_editor = login_log_pref.edit();
-                                    login_log_editor.putString("first_naver_login" , "false");
-                                    login_log_editor.commit();
-                                    Log.e("Naver_login 성공 ", Email);
-                                    //intent.putExtra("pw", PasswordConfirmText.getText().toString());
-                                    startActivity(intent);
-//                                }
-                            }
-                            else if(result.getResult() == 3){ // 회원가입 실패 중복된 이메일이 있ㅅ음
-                                Toast.makeText(LoginActivity.this , "이미 등록된 이메일이 있습니다.", Toast.LENGTH_SHORT).show();
-                                login_information_pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
-                                login_infromation_editor = login_information_pref.edit();
-
                                 if(first_naver_login.equals("true")){
                                     Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
                                     intent.putExtra("email", Email);
@@ -221,18 +213,38 @@ public class LoginActivity extends AppCompatActivity  {
                                     //intent.putExtra("pw", PasswordConfirmText.getText().toString());
                                     startActivity(intent);
                                 }
-                                else if(first_naver_login.equals("false")){
-                                    //가져온 Email을 서버에 전송, Email이 user table에 있으면 true를 받아옴
-                                    //true이면 main activity로 넘어감
-                                    //sns_login_request(Email, "naver");
-                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                    login_infromation_editor.putString("login_type" , "naver");
-                                    login_infromation_editor.putString("email" , Email);
-                                    login_infromation_editor.commit();
-                                    startActivity(intent);
-                                    finish();
+                            }
+                            else if(result.getResult() == 3){ // 회원가입 실패 중복된 이메일이 있ㅅ음
+                                Toast.makeText(LoginActivity.this , "이미 등록된 이메일이 있습니다.", Toast.LENGTH_SHORT).show();
+                                mOAuthLoginModule.logoutAndDeleteToken(LoginActivity.mContext);
+                                //                                login_information_pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
+//                                login_infromation_editor = login_information_pref.edit();
 
-                                }
+//                                if(first_naver_login.equals("true")){
+//                                    Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
+//                                    intent.putExtra("email", Email);
+//                                    intent.putExtra("login_type","naver");
+//
+//                                    login_log_pref = getSharedPreferences("SNS_login_log", Activity.MODE_PRIVATE);
+//                                    login_log_editor = login_log_pref.edit();
+//                                    login_log_editor.putString("first_naver_login" , "false");
+//                                    login_log_editor.commit();
+//                                    Log.e("Naver_login 성공 ", Email);
+//                                    //intent.putExtra("pw", PasswordConfirmText.getText().toString());
+//                                    startActivity(intent);
+//                                }
+//                                else if(first_naver_login.equals("false")){
+//                                    //가져온 Email을 서버에 전송, Email이 user table에 있으면 true를 받아옴
+//                                    //true이면 main activity로 넘어감
+//                                    //sns_login_request(Email, "naver");
+//                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//                                    login_infromation_editor.putString("login_type" , "naver");
+//                                    login_infromation_editor.putString("email" , Email);
+//                                    login_infromation_editor.commit();
+//                                    startActivity(intent);
+//                                    finish();
+//
+//                                }
                             }
                             else if(result.getResult() == 4) { // 로그인 성공!
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -325,7 +337,8 @@ public class LoginActivity extends AppCompatActivity  {
                     login_infromation_editor.putString("email" , Email);
                     login_infromation_editor.commit();
 
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    //Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, Tutorial.class);
                     startActivity(intent);
                     finish();
                 }
@@ -579,22 +592,6 @@ public class LoginActivity extends AppCompatActivity  {
         //서버로 부터 데이터를 받음
         InputStream stream = con.getInputStream();;
         ByteArrayOutputStream baos = null;
-//        if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
-//
-//            baos = new ByteArrayOutputStream();
-//            byte[] byteBuffer = new byte[1024];
-//            byte[] byteData = null;
-//            int len = 0;
-//            while((len = stream.read(byteBuffer, 0, byteBuffer.length)) != -1){
-//                baos.write(byteBuffer, 0, len);
-//            }
-//            byteData = baos.toByteArray();
-//
-//            String response = new String(byteData);
-//            JSONObject responseJSON = new JSONObject(response);
-//            Boolean result = (Boolean) responseJSON.get("result");
-//            String state = (String)responseJSON.get("hi");
-//        }
 
         reader = new BufferedReader(new InputStreamReader(stream));
         StringBuilder buffer = new StringBuilder();
@@ -849,8 +846,20 @@ public class LoginActivity extends AppCompatActivity  {
                             //등록되지 않은 이메일
                             //나중에 주석 풀기
 
-                        Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
-                            intent.putExtra("email", kakao_Email);
+//                         Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
+//                            intent.putExtra("email", kakao_Email);
+//                            intent.putExtra("login_type","kakao");
+//
+//                            login_log_editor = login_log_pref.edit();
+//                            login_log_editor.putString("first_kakao_login" , "false");
+//                            login_log_editor.commit();
+//                            Log.e("Kakao_login 성공 ", "tqtqtqtqtqtqtqtq");
+//                            //intent.putExtra("pw", PasswordConfirmText.getText().toString());
+//                            startActivity(intent);
+//
+                        if(first_kakao_login.equals("true")){
+                            Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
+                            intent.putExtra("email", Email);
                             intent.putExtra("login_type","kakao");
 
                             login_log_editor = login_log_pref.edit();
@@ -859,45 +868,53 @@ public class LoginActivity extends AppCompatActivity  {
                             Log.e("Kakao_login 성공 ", "tqtqtqtqtqtqtqtq");
                             //intent.putExtra("pw", PasswordConfirmText.getText().toString());
                             startActivity(intent);
-//
-//                        if(first_kakao_login.equals("true")){
-//                                                    Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
-//                                                    intent.putExtra("email", Email);
-//                                                    intent.putExtra("login_type","kakao");
-//
-//                                                    login_log_editor = login_log_pref.edit();
-//                                                    login_log_editor.putString("first_kakao_login" , "false");
-//                                                    login_log_editor.commit();
-//                                                    Log.e("Kakao_login 성공 ", "tqtqtqtqtqtqtqtq");
-//                                                    //intent.putExtra("pw", PasswordConfirmText.getText().toString());
-//                                                    startActivity(intent);
-//                                                }
+                         }
                         }
                         else if(social_sign_in_result.getResult() == 3){
                             //등록된 이메일이 있음
-                            if(first_kakao_login.equals("true")){
-                                Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
-                                intent.putExtra("email",kakao_Email);
-                                intent.putExtra("login_type","kakao");
+                            Toast.makeText(LoginActivity.this , "이미 등록된 이메일이 있습니다.", Toast.LENGTH_SHORT).show();
 
-                                login_log_editor = login_log_pref.edit();
-                                login_log_editor.putString("first_kakao_login" , "false");
-                                login_log_editor.commit();
-                                Log.e("Kakao_login 성공 ", "tqtqtqtqtqtqtqtq");
-                                //intent.putExtra("pw", PasswordConfirmText.getText().toString());
-                                startActivity(intent);
-                            }
-                            else{
-                                login_information_pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
-                                login_infromation_editor = login_information_pref.edit();
-                                login_infromation_editor.putString("login_type" , "kakao");
-                                login_infromation_editor.putString("email" , kakao_Email);
-                                login_infromation_editor.commit();
+                            UserManagement.getInstance()
+                                    .requestUnlink(new UnLinkResponseCallback() {
+                                        @Override
+                                        public void onSessionClosed(ErrorResult errorResult) {
+                                            Log.e("KAKAO_API", "세션이 닫혀 있음: " + errorResult);
+                                        }
 
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                startActivity(intent);//  성공하고 다음페이지로 넘어감
-                                finish();
-                            }
+                                        @Override
+                                        public void onFailure(ErrorResult errorResult) {
+                                            Log.e("KAKAO_API", "연결 끊기 실패: " + errorResult);
+
+                                        }
+                                        @Override
+                                        public void onSuccess(Long result) {// 카카오 회원탈퇴 성공시
+                                            Log.i("KAKAO_API", "연결 끊기 성공. id: " + result);
+                                        }
+                                    });
+
+//                            if(first_kakao_login.equals("true")){
+//                                Intent intent = new Intent(LoginActivity.this, additional_inform_register.class);
+//                                intent.putExtra("email",kakao_Email);
+//                                intent.putExtra("login_type","kakao");
+//
+//                                login_log_editor = login_log_pref.edit();
+//                                login_log_editor.putString("first_kakao_login" , "false");
+//                                login_log_editor.commit();
+//                                Log.e("Kakao_login 성공 ", "tqtqtqtqtqtqtqtq");
+//                                //intent.putExtra("pw", PasswordConfirmText.getText().toString());
+//                                startActivity(intent);
+//                            }
+//                            else{
+//                                login_information_pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
+//                                login_infromation_editor = login_information_pref.edit();
+//                                login_infromation_editor.putString("login_type" , "kakao");
+//                                login_infromation_editor.putString("email" , kakao_Email);
+//                                login_infromation_editor.commit();
+//
+//                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//                                startActivity(intent);//  성공하고 다음페이지로 넘어감
+//                                finish();
+//                            }
                         }
                         else if(social_sign_in_result.getResult() == 4){
                             //로그인 성공!

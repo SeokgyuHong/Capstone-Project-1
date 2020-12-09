@@ -22,7 +22,9 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-    <string name="server_ip">http://27.35.109.92:3000</string>
+    <string name="server_ip">http://13.125.182.195:8080</string>
+    <string name="sensor_ip">http://13.125.182.195:8080</string>
+    <string name="test_FCM_ip">http://27.35.109.92:3000</string>
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
@@ -32,5 +34,6 @@
     <string name="channel_description">channel_description</string>
 
 
-    <!-- http://155.230.35.178:3000 http://10.0.2.2:3000 http://27.35.109.92:3000 http://222.104.206.213:8080-->
+    <!-- http://155.230.35.178:3000 http://10.0.2.2:3000 http://27.35.109.92:3000 http://222.104.206.213:8080
+    http://223.62.178.12:8080 http://1.210.106.30:8080 http://13.125.182.195:8080 -->
 </resources>

@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Home_fragment">
+    tools:context=".Home_fragment"
+    android:background="@drawable/edge6">
 
     <!-- TODO: Update blank fragment layout -->
     <LinearLayout
@@ -15,8 +16,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:background="@drawable/edge6">
+            android:layout_height="210dp"
+            >
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -36,28 +37,19 @@
                     app:layout_constraintVertical_bias="0.0" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/materialTextView2"
-                    android:layout_width="200dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="3dp"
+                    android:id="@+id/profile_name"
+                    android:layout_width="100dp"
+                    android:layout_height="30dp"
                     android:gravity="center"
-                    android:text="노준석"
+                    android:text="노준석님"
                     android:textColor="@color/login_font"
-                    android:textSize="25sp"
+                    android:textSize="22sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="15dp"
-                    android:background="@drawable/edge9"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/materialTextView2"
-                    tools:ignore="MissingConstraints" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -66,75 +58,88 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/edge10">
+            android:background="@drawable/edge9">
 
-            <LinearLayout
-                android:id="@+id/linearLayout3"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
+            <com.dinuscxj.progressbar.CircleProgressBar
+                android:id="@+id/contected_sensor"
+                android:layout_width="167dp"
+                android:layout_height="179dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="48dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:line_count="30"
+                app:progress_background_color="@color/colorAccent"
+                app:progress_end_color="@color/colorPrimaryDark"
+                app:progress_shader="linear"
+                app:progress_start_color="@color/colorPrimary"
+                app:progress_stroke_cap="round"
+                app:progress_stroke_width="6dp"
+                app:progress_text_color="@color/colorPrimary"
+                app:progress_text_size="30sp"
+                app:style="solid_line" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:layout_width="140dp"
-                    android:layout_height="70dp"
-                    android:paddingLeft="25dp"
-                    android:paddingTop="5dp"
-                    android:text="센서 목록"
-                    android:textSize="21sp"
-                    android:textColor="@color/login_font"
-                    android:textStyle="bold"
-                    />
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="130dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="48dp"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:text="연결된 센서 수"
+                android:textColor="@color/login_font"
+                android:textSize="18sp"
 
-                <LinearLayout
-                    android:layout_width="200dp"
-                    android:layout_height="80dp">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/contected_sensor" />
 
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="294dp"
-                        android:layout_height="20dp"
-                        android:background="@drawable/edge11" />
+            <com.dinuscxj.progressbar.CircleProgressBar
+                android:id="@+id/fall_down_count"
+                android:layout_width="167dp"
+                android:layout_height="179dp"
+                android:layout_marginTop="48dp"
+                android:layout_marginEnd="24dp"
 
-                </LinearLayout>
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:line_count="30"
+                app:line_width="5dp"
+                app:progress_background_color="@color/progressbar4"
+                app:progress_end_color="@color/progressbar6"
+                app:progress_shader="linear"
+                app:progress_start_color="@color/progressbar5"
+                app:progress_stroke_cap="round"
+                app:progress_stroke_width="6dp"
+                app:progress_text_color="@color/login_register"
+                app:progress_text_size="30sp"
+                app:style="solid_line" />
 
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="120dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="48dp"
+                android:gravity="center"
+                android:text="총 낙상 발생 수"
+                android:textColor="@color/login_font"
+                android:textSize="18sp"
 
-            </LinearLayout>
-        <!--
-            <LinearLayout
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fall_down_count" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/materialTextView2"
                 android:layout_width="350dp"
-                android:layout_height="wrap_content"
-
-                android:orientation="vertical"
+                android:layout_height="60dp"
+                android:layout_marginBottom="32dp"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:text="낙상이 발생하면 피보호자의 상태를\n우선 확인하세요!"
+                android:textColor="@color/login_font"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/Recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="300dp" />
-
-            </LinearLayout>
-        -->
-
-            <androidx.core.widget.NestedScrollView
-                android:layout_width="350dp"
-                android:layout_height="260dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
-       >
-
-                <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/Recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            </androidx.core.widget.NestedScrollView>
-
+                app:layout_constraintHorizontal_bias="0.491"
+                app:layout_constraintStart_toStartOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </FrameLayout>

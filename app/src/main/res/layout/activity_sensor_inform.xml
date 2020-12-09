@@ -32,12 +32,12 @@
                     tools:ignore="MissingConstraints">
 
                     <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/sensor_name_inform"
+                        android:id="@+id/text_Sensor_name"
                         android:layout_width="wrap_content"
                         android:layout_height="58dp"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:text="Sensor1"
+                        android:text="회원님의 정보입니다."
                         android:textColor="@color/login_font"
                         android:textSize="20sp"
                         android:textStyle="bold"
@@ -114,155 +114,155 @@
 
                             </LinearLayout>
 
+                            <LinearLayout
+                                android:layout_width="350dp"
+                                android:layout_height="match_parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
+                                android:orientation="vertical">
                                 <LinearLayout
-                                    android:layout_width="350dp"
-                                    android:layout_height="match_parent"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
-                                    android:orientation="vertical">
-                                        <LinearLayout
-                                            android:layout_width="match_parent"
-                                            android:layout_height="55dp"
-                                            android:orientation="vertical"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="55dp"
+                                    android:orientation="vertical"
 
-                                            android:background="@drawable/edge11">
+                                    android:background="@drawable/edge11">
 
-                                            <com.google.android.material.textview.MaterialTextView
-                                                android:layout_width="match_parent"
-                                                android:layout_height="20dp"
-                                                android:paddingLeft="20dp"
-                                                android:text="Wi-Fi MAC 주소"
-                                                android:gravity="center|left"
-                                                android:textSize="18sp"
-                                                android:textColor="@color/login_font"
-                                                android:textStyle="bold"/>
-
-                                            <com.google.android.material.textview.MaterialTextView
-                                                android:id="@+id/text_MacAdress"
-                                                android:layout_width="match_parent"
-                                                android:paddingLeft="20dp"
-                                                android:layout_height="30dp"
-                                                android:text="50:77:05:F2:43:57"
-                                                android:gravity="center|left"
-                                                android:textColor="@color/login_font"
-                                                android:textSize="16sp"
-                                                />
-                                        </LinearLayout>
-                                    <LinearLayout
+                                    <com.google.android.material.textview.MaterialTextView
                                         android:layout_width="match_parent"
-                                        android:layout_height="55dp"
-                                        android:orientation="vertical"
-                                        android:layout_marginTop="10dp"
-                                        android:background="@drawable/edge11">
+                                        android:layout_height="25dp"
+                                        android:paddingLeft="20dp"
+                                        android:text="Wi-Fi MAC 주소"
+                                        android:gravity="center|left"
+                                        android:textSize="18sp"
+                                        android:textColor="@color/login_font"
+                                        android:textStyle="bold"/>
 
-                                        <com.google.android.material.textview.MaterialTextView
-                                            android:layout_width="match_parent"
-                                            android:layout_height="20dp"
-                                            android:paddingLeft="20dp"
-                                            android:text="센서 위치"
-                                            android:gravity="center|left"
-                                            android:textSize="18sp"
-                                            android:textColor="@color/login_font"
-                                            android:textStyle="bold"/>
-
-                                        <com.google.android.material.textview.MaterialTextView
-                                            android:id="@+id/text_SensorLocation"
-                                            android:layout_width="match_parent"
-                                            android:paddingLeft="20dp"
-                                            android:layout_height="30dp"
-                                            android:text="3층 303호"
-                                            android:gravity="center|left"
-                                            android:textColor="@color/login_font"
-                                            android:textSize="16sp"
-                                            />
-                                    </LinearLayout>
-                                    <LinearLayout
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:id="@+id/text_MacAdress"
                                         android:layout_width="match_parent"
-                                        android:layout_height="55dp"
-                                        android:orientation="vertical"
-                                        android:background="@drawable/edge11"
-                                        android:layout_marginTop="10dp">
-
-                                        <com.google.android.material.textview.MaterialTextView
-                                            android:layout_width="match_parent"
-                                            android:layout_height="20dp"
-                                            android:paddingLeft="20dp"
-                                            android:text="센서 상태"
-                                            android:gravity="center|left"
-                                            android:textSize="18sp"
-                                            android:textColor="@color/login_font"
-                                            android:textStyle="bold"/>
-
-                                        <com.google.android.material.textview.MaterialTextView
-                                            android:id="@+id/text_SensorStatus"
-                                            android:layout_width="match_parent"
-                                            android:paddingLeft="20dp"
-                                            android:layout_height="30dp"
-                                            android:text="연결됨"
-                                            android:gravity="center|left"
-                                            android:textColor="@color/login_font"
-                                            android:textSize="16sp"
-                                            />
-                                    </LinearLayout>
-
-                                    <LinearLayout
-                                        android:layout_width="match_parent"
-                                        android:layout_height="58dp"
-                                        android:layout_marginTop="10dp"
-                                        android:background="@drawable/edge11"
-                                        android:orientation="vertical">
-
-                                        <com.google.android.material.textview.MaterialTextView
-                                            android:layout_width="match_parent"
-                                            android:layout_height="20dp"
-                                            android:gravity="center|left"
-                                            android:paddingLeft="20dp"
-                                            android:text="배터리 상태"
-                                            android:textColor="@color/login_font"
-                                            android:textSize="18sp"
-                                            android:textStyle="bold" />
-
-                                        <com.google.android.material.textview.MaterialTextView
-                                            android:id="@+id/text_Sensorbattery"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="30dp"
-                                            android:gravity="center|left"
-                                            android:paddingLeft="20dp"
-                                            android:text="충전중"
-                                            android:textColor="@color/login_font"
-                                            android:textSize="16sp" />
-                                    </LinearLayout>
-                                    <LinearLayout
-                                        android:layout_width="match_parent"
-                                        android:layout_height="55dp"
-                                        android:orientation="vertical"
-                                        android:layout_marginTop="10dp"
-                                        android:background="@drawable/edge11">
-
-                                        <com.google.android.material.textview.MaterialTextView
-                                            android:layout_width="match_parent"
-                                            android:layout_height="20dp"
-                                            android:paddingLeft="20dp"
-                                            android:text="배터리 잔량"
-                                            android:gravity="center|left"
-                                            android:textSize="18sp"
-                                            android:textColor="@color/login_font"
-                                            android:textStyle="bold"/>
-
-                                        <com.google.android.material.textview.MaterialTextView
-                                            android:id="@+id/text_Sensorbattery_remain"
-                                            android:layout_width="match_parent"
-                                            android:paddingLeft="20dp"
-                                            android:layout_height="30dp"
-                                            android:text="59%"
-                                            android:gravity="center|left"
-                                            android:textColor="@color/login_font"
-                                            android:textSize="16sp"
-                                            />
-                                    </LinearLayout>
-
+                                        android:paddingLeft="20dp"
+                                        android:layout_height="30dp"
+                                        android:text="50:77:05:F2:43:57"
+                                        android:gravity="center|left"
+                                        android:textColor="@color/login_font"
+                                        android:textSize="16sp"
+                                        />
                                 </LinearLayout>
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="55dp"
+                                    android:orientation="vertical"
+                                    android:layout_marginTop="10dp"
+                                    android:background="@drawable/edge11">
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="25dp"
+                                        android:paddingLeft="20dp"
+                                        android:text="센서 위치"
+                                        android:gravity="center|left"
+                                        android:textSize="18sp"
+                                        android:textColor="@color/login_font"
+                                        android:textStyle="bold"/>
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:id="@+id/text_SensorLocation"
+                                        android:layout_width="match_parent"
+                                        android:paddingLeft="20dp"
+                                        android:layout_height="30dp"
+                                        android:text="3층 303호"
+                                        android:gravity="center|left"
+                                        android:textColor="@color/login_font"
+                                        android:textSize="16sp"
+                                        />
+                                </LinearLayout>
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="55dp"
+                                    android:orientation="vertical"
+                                    android:background="@drawable/edge11"
+                                    android:layout_marginTop="10dp">
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="25dp"
+                                        android:paddingLeft="20dp"
+                                        android:text="센서 상태"
+                                        android:gravity="center|left"
+                                        android:textSize="18sp"
+                                        android:textColor="@color/login_font"
+                                        android:textStyle="bold"/>
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:id="@+id/text_SensorStatus"
+                                        android:layout_width="match_parent"
+                                        android:paddingLeft="20dp"
+                                        android:layout_height="30dp"
+                                        android:text="연결됨"
+                                        android:gravity="center|left"
+                                        android:textColor="@color/login_font"
+                                        android:textSize="16sp"
+                                        />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="58dp"
+                                    android:layout_marginTop="10dp"
+                                    android:background="@drawable/edge11"
+                                    android:orientation="vertical">
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="25dp"
+                                        android:gravity="center|left"
+                                        android:paddingLeft="20dp"
+                                        android:text="배터리 상태"
+                                        android:textColor="@color/login_font"
+                                        android:textSize="18sp"
+                                        android:textStyle="bold" />
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:id="@+id/text_Sensorbattery"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="30dp"
+                                        android:gravity="center|left"
+                                        android:paddingLeft="20dp"
+                                        android:text="보통"
+                                        android:textColor="@color/login_font"
+                                        android:textSize="16sp" />
+                                </LinearLayout>
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="55dp"
+                                    android:orientation="vertical"
+                                    android:layout_marginTop="10dp"
+                                    android:background="@drawable/edge11">
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="25dp"
+                                        android:paddingLeft="20dp"
+                                        android:text="배터리 잔량"
+                                        android:gravity="center|left"
+                                        android:textSize="18sp"
+                                        android:textColor="@color/login_font"
+                                        android:textStyle="bold"/>
+
+                                    <com.google.android.material.textview.MaterialTextView
+                                        android:id="@+id/text_Sensorbattery_remain"
+                                        android:layout_width="match_parent"
+                                        android:paddingLeft="20dp"
+                                        android:layout_height="30dp"
+                                        android:text="98%"
+                                        android:gravity="center|left"
+                                        android:textColor="@color/login_font"
+                                        android:textSize="16sp"
+                                        />
+                                </LinearLayout>
+
+                            </LinearLayout>
 
 
                         </androidx.constraintlayout.widget.ConstraintLayout>

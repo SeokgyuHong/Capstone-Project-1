@@ -4,6 +4,10 @@
     package="com.example.myapplication">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.DIAL_PHONE" />
 
     <application
         android:name=".ui.login.GlobalApplication"
@@ -14,7 +18,19 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="MissingClass">
-        <activity android:name=".Sensor_inform"></activity>
+        <activity android:name=".Change_PW"></activity>
+        <activity android:name=".User_inform" />
+        <activity android:name=".Tutorial" />
+        <activity android:name=".NearHospital" />
+        <activity android:name=".splashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".FalldownActivity" />
+        <activity android:name=".Sensor_inform" />
         <activity android:name=".DaumWebViewActivity" />
         <activity android:name=".delete_accout_activity" />
         <activity android:name=".account_register_complete" />
@@ -23,6 +39,16 @@
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_app_key" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyABwG5mg2FEJyt7BbWOeGhaw5iSZ8hH2WE" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
         <!--
         <activity
             android:name=".MainActivity"
@@ -33,14 +59,10 @@
             </intent-filter>
         </activity>
         -->
-        <activity
-            android:name=".ui.login.LoginActivity"
-            android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+        <activity android:name=".ui.login.LoginActivity">
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <!-- android:theme="@style/SplashTheme" -->
+
         </activity>
         <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity">
             <intent-filter>
@@ -57,7 +79,11 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_login" />
+            android:label="@string/title_activity_login">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ContentActivity"
             android:parentActivityName=".MainActivity" />
@@ -71,7 +97,7 @@
             android:name=".additional_inform_register"
             android:parentActivityName=".RegisterActivity" />
 
-        <service android:name=".ui.login.LoginActivity">
+        <service android:name=".MainActivity">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>

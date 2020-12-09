@@ -2,21 +2,20 @@ package com.example.myapplication;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -27,30 +26,24 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.myapplication.Thread.ThreadTask;
 import com.example.myapplication.ui.login.LoginActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textview.MaterialTextView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-import com.google.firebase.messaging.RemoteMessage;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.kakao.network.ErrorResult;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
@@ -78,13 +71,6 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-import static androidx.constraintlayout.widget.ConstraintProperties.PARENT_ID;
 
 public class MainActivity<pirvate> extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, FragmentCallback{
 
@@ -105,6 +91,8 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
     private Home_fragment home_fragment;
     private Sensor_fragment sensor_fragment;
     private Mypage_fragment mypage_fragment;
+    private Hospital_fragment hospital_fragment;
+
     private String ip;
     DrawerLayout drawer;
 
@@ -131,6 +119,7 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
         home_fragment = new Home_fragment();
         sensor_fragment = new Sensor_fragment();
         mypage_fragment = new Mypage_fragment();
+        hospital_fragment = new Hospital_fragment();
 
         login_information_pref = getSharedPreferences("login_information", Context.MODE_PRIVATE);
         Email = login_information_pref.getString("email", "");
@@ -147,6 +136,10 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
         actionBar.setDisplayShowTitleEnabled(false);
         toolbartext = (MaterialTextView)findViewById(R.id.toolbar_textview);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkPermission();
+        }
+
         //actionBar.setDisplayHomeAsUpEnabled(true); 뒤로가기 버튼, 현재 흰색이라서 생성해도 보이지는 않음 필요는없
 
         //getSupportFragmentManager().beginTransaction().replace(R.id.container , home_fragment).commit();
@@ -161,17 +154,24 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
                             case R.id.tab1:
                                 //Toast.makeText(getApplicationContext(), "1", Toast.LENGTH_SHORT).show();
                                 getSupportFragmentManager().beginTransaction().replace(R.id.container, home_fragment).commit();
-                                toolbartext.setText("Home");
+                                toolbartext.setText("안녕하세요!");
                                 return true;
                             case R.id.tab2 :
                                 //Toast.makeText(getApplicationContext(), "2", Toast.LENGTH_SHORT).show();
                                 getSupportFragmentManager().beginTransaction().replace(R.id.container, sensor_fragment).commit();
-                                toolbartext.setText("Sensor");
+                                toolbartext.setText("센서를 관리해주세요");
                                 return true;
                             case R.id.tab3 :
                                 //Toast.makeText(getApplicationContext(), "3", Toast.LENGTH_SHORT).show();
                                 getSupportFragmentManager().beginTransaction().replace(R.id.container, mypage_fragment).commit();
-                                toolbartext.setText("Mypage");
+                                toolbartext.setText("회원님의 정보입니다");
+                                return true;
+                            case R.id.tab4 :
+                                //Toast.makeText(getApplicationContext(), "3", Toast.LENGTH_SHORT).show();
+                                //getSupportFragmentManager().beginTransaction().replace(R.id.container, hospital_fragment).commit();
+                                Intent intent = new Intent(MainActivity.this, NearHospital.class);
+                                startActivity(intent);
+                                //toolbartext.setText("피보호자 근처의 병원입니다");
                                 return true;
                         }
                         return false;
@@ -185,7 +185,7 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
 
         //createNotificationChannel();
 
-
+        FirebaseMessaging.getInstance().subscribeToTopic("falldown");
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( MainActivity.this,  new OnSuccessListener<InstanceIdResult>() {
             @Override
             public void onSuccess(InstanceIdResult instanceIdResult) {
@@ -196,7 +196,6 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
                 makeThread(newToken);
                 int response = send_token_response(Email, newToken);
 
-                //getHeadup();
                 if(response == 1){
                     Log.e("토큰 전송 : ", "이메일 형식 에러");
                 }
@@ -218,8 +217,8 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
         });
 
     }
-    private void getHeadup(){
-        Intent snoozeIntent = new Intent(this, MainActivity.class);
+    private void getHeadup(String title, String body){
+        Intent snoozeIntent = new Intent(this,RegisterActivity.class);
         snoozeIntent.setAction("ACTION_SNOOZE");
         snoozeIntent.putExtra("EXTRA_NOTIFICATION_ID", 0);
         PendingIntent snoozePendingIntent =
@@ -227,19 +226,21 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_menu_slideshow)
-                .setContentTitle("My notification")
-                .setContentText("Much longer text that cannot fit one line...")
+                .setContentTitle(title)
+                .setContentText(body)
                 .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText("Much longer text that cannot fit one line..."))
+                        .bigText(body))
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setDefaults(Notification.DEFAULT_VIBRATE)
-                .setFullScreenIntent(snoozePendingIntent, true)
-                .setAutoCancel(true);
+                .setFullScreenIntent(snoozePendingIntent, false)
+                .setContentIntent(snoozePendingIntent);
+        //.setAutoCancel(true);
+
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 
         // notificationId is a unique int for each notification that you must define
-        int notificationId = 10;
+        int notificationId = 15;
         notificationManager.notify(notificationId, builder.build());
     }
 
@@ -265,6 +266,7 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
                 BufferedReader reader = null;
 
                 URL url = new URL(urls[0] +"/firebase_token_save");
+               // URL url = new URL(getString(R.string.test_FCM_ip) +"/firebase_token_save");
                 con = (HttpURLConnection) url.openConnection();
 
                 sendObject.put("email_address",Request_email);
@@ -508,12 +510,20 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
 //        navigationView.setNavigationItemSelectedListener(this);
     }
 
+    private long time = 0;
     @Override
     public void onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+//        if (drawer.isDrawerOpen(GravityCompat.START)) {
+//            drawer.closeDrawer(GravityCompat.START);
+//        } else {
+//            super.onBackPressed();
+//        }
+        if(System.currentTimeMillis() - time >= 2000){
+            time = System.currentTimeMillis();
+            Toast.makeText(getApplicationContext(), "뒤로 버튼을 한번 더 누르면 종료합니다.", Toast.LENGTH_SHORT).show();
+        }
+        else if(System.currentTimeMillis() - time < 2000){
+            finish();
         }
     }
 
@@ -620,7 +630,43 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
             notificationManager.createNotificationChannel(channel);
         }
     }
+    @TargetApi(Build.VERSION_CODES.M)
 
+    private void checkPermission() {
+
+        String[] permissions = {
+                // Manifest는 android를 import
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.CALL_PHONE
+        };
+
+        int permissionCheck = PackageManager.PERMISSION_GRANTED;
+        for (String permission : permissions) {
+            permissionCheck = this.checkSelfPermission(permission);
+            if (permissionCheck == PackageManager.PERMISSION_DENIED) {
+                //break;
+            }
+        }
+        //전화 승인
+        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
+            this.requestPermissions(permissions, 1);
+        }
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE )!= PackageManager.PERMISSION_GRANTED){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CALL_PHONE)){
+                /**
+                 * 거절 했을 때
+                 * */
+            }
+            else{
+                /**
+                 * 승인했을 때
+                 * */
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE},
+                        1000);
+            }
+        }
+    }
 }
 
 

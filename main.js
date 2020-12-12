@@ -42,12 +42,9 @@ const sensor_on_off = require('./sensor/sensor_on_off');
 //fcm전송
 const send_fcm = require('./sensor/send_fcm');
 //From 센서 To 클라이언트
-//const socket = require('./socket/socket'); //웹소켓을 통해 전송 
 
-//session_json = session_info.session_info; //세션정보
 app.use(bodyparser.json()) //미들웨어 
 app.use(express.urlencoded({extended:false}))
-//app.use(session(session_json));
 
 
 app.engine('html', require('ejs').renderFile);
@@ -57,8 +54,6 @@ app.get('/',(req,res)=>{
   let file_name = __dirname+'/html/daum.html';
   res.render(file_name);
 });
-// app.post('/nodemailerTest',send_mail);
-//app.post('/notification',send_fcm);
 
 //센서등록 
 app.post('/sensor_duplication_check',sensor_connect.sensor_duplication_check);
@@ -86,7 +81,7 @@ app.post('/temp_pw_check',normal_sign_up.temp_pw_check); //임시비밀번호 �
 app.post('/normal_sign_up',normal_sign_up.normal_sign_up); //일반계정 회원가입
 
 //소셜계정 회원가입
-//app.post('/id_duplication_check',normal_sign_up.id_duplication_check); //소설계정 회원가입 
+
 app.post('/social_sign_up',social_sign_up.social_sign_up);
 app.post('/social_sign_in',social_sign_in.social_sign_in); //소셜계정 로그인
 
@@ -94,8 +89,6 @@ app.post('/social_sign_in',social_sign_in.social_sign_in); //소셜계정 로그
 app.post('/normal_sign_in',normal_sign_in.normal_sign_in); //일반계정 로그인
 
 
-
-//app.post('/firebase_token_save',fcm_token_save.fcm_token_save); //fcm 수신을 위한 토큰 디비에 저장
 
 //로그아웃
 app.post('/sign_out',sign_out.sign_out);
@@ -111,13 +104,6 @@ app.post('/account_information_modification',account_information_modification.ac
 app.post('/user_type_check',password_modification.user_type_check); //유저타입 체크함수
 app.post('/password_modification',password_modification.password_modification);//패스워드변경
 
-
-//소켓 테스트중
-//app.post('/data_from_sensor',socket.data_from_sensor);
 app.listen(8080, function() {
     console.log('Example app listening on port 8080!')
   });
-
-// const io = socketIO(server);
-// module.exports.io = io;
-// console.log('main에서 출력한 Io',io);

@@ -18,7 +18,9 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="MissingClass">
-        <activity android:name=".Change_PW"></activity>
+        <activity android:name=".ResetPW"></activity>
+        <activity android:name=".FindEmail" />
+        <activity android:name=".Change_PW" />
         <activity android:name=".User_inform" />
         <activity android:name=".Tutorial" />
         <activity android:name=".NearHospital" />

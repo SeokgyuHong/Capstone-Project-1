@@ -53,7 +53,7 @@ public class Mypage_fragment extends Fragment {
     private MaterialTextView logoutView;
     private MaterialTextView Account_delete_View;
     private MaterialTextView userinform;
-
+    private MaterialTextView ChangPw;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -74,6 +74,8 @@ public class Mypage_fragment extends Fragment {
     private static Mypage_fragment Instance;
     private boolean isSuccessDeleteToken = false;
     static OAuthLogin mOAuthLoginModule;
+
+    private MaterialTextView EmailView;
 
     /**
      * Use this factory method to create a new instance of
@@ -129,8 +131,12 @@ public class Mypage_fragment extends Fragment {
         login_information_pref = getActivity().getSharedPreferences("login_information", Context.MODE_PRIVATE);
         login_infromation_editor = login_information_pref.edit();
 
+
         login_type = login_information_pref.getString("login_type", "null");
         Email = login_information_pref.getString("email", Email);
+
+        EmailView = v.findViewById(R.id.Email);
+        EmailView.setText(Email);
         //SNS 로그인시에 첫 로그인인지 아닌지 확인하기 위한 preference
         login_log_pref = getActivity().getSharedPreferences("SNS_login_log", Context.MODE_PRIVATE);
         login_log_editor = login_log_pref.edit();
@@ -149,6 +155,14 @@ public class Mypage_fragment extends Fragment {
             }
         });
 
+        ChangPw = (MaterialTextView)v.findViewById(R.id.ChangPw);
+        ChangPw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), Change_PW.class);
+                startActivity(intent);
+            }
+        });
         logoutView = (MaterialTextView)v.findViewById(R.id.logout_button);
         logoutView.setOnClickListener(new View.OnClickListener() {
             @Override

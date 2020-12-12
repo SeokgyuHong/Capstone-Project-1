@@ -6,6 +6,7 @@ import android.app.Activity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,9 +32,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.myapplication.FindEmail;
 import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.RegisterActivity;
+import com.example.myapplication.ResetPW;
 import com.example.myapplication.Thread.ThreadTask;
 import com.example.myapplication.Tutorial;
 import com.example.myapplication.Utils;
@@ -115,6 +118,9 @@ public class LoginActivity extends AppCompatActivity  {
     private SharedPreferences.Editor login_infromation_editor;
     private SharedPreferences.Editor login_log_editor;
 
+    private Button find_Email_button;
+    private Button find_pw_button;
+
     private String kakao_Email;
     Session Kakao_session;
     private LoginRepository KakaoTalkService;
@@ -127,18 +133,8 @@ public class LoginActivity extends AppCompatActivity  {
     * */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-
-
         setContentView(R.layout.activity_login);
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//            }
-//        }, 15000);
-//        setTheme(R.style.AppTheme);
         Utils.setStatusBarColor(this, Utils.StatusBarcolorType.BLACK_STATUS_BAR);
 
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory()).get(LoginViewModel.class);
@@ -147,6 +143,28 @@ public class LoginActivity extends AppCompatActivity  {
         ip = getString(R.string.server_ip);
         //Toast.makeText(getApplication(),ip+"/naver", Toast.LENGTH_SHORT).show();
         //session 값에서 어떤 로그인할지 정하기.. ?
+
+        find_Email_button = findViewById(R.id.find_id);
+        find_pw_button = findViewById(R.id.find_pw);
+
+        find_Email_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setComponent(new ComponentName("com.example.myapplication", "com.example.myapplication.FindEmail"));
+                startActivity(intent);
+            }
+        });
+
+        find_pw_button.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setComponent(new ComponentName("com.example.myapplication", "com.example.myapplication.ResetPW"));
+                startActivity(intent);
+            }
+        });
+
         getHashKey();
         btn_custom_login = (Button) findViewById(R.id.btn_kakao_login_custom);
 

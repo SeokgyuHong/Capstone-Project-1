@@ -26,19 +26,18 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class Change_PW extends AppCompatActivity {
-    EditText CurrentPwView;
-    EditText ChangedPWView;
-    EditText ChangedPW2View;
+public class FindEmail extends AppCompatActivity {
+    EditText UserNameView;
+    EditText UserPhoneView;
 
-    String currentPw;
-    String changedPw;
-    String changedPw2;
+    String UserName;
+    String UserPhone;
+
     String Email;
-    private SharedPreferences login_information_pref;
+
     String ip;
 
-
+    private SharedPreferences login_information_pref;
 
     Button ConfirmButton;
 
@@ -49,7 +48,7 @@ public class Change_PW extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_change__p_w);
+        setContentView(R.layout.activity_find_email);
 
         Utils.setStatusBarColor(this, Utils.StatusBarcolorType.BLACK_STATUS_BAR);
 
@@ -62,39 +61,27 @@ public class Change_PW extends AppCompatActivity {
 
         ip = getString(R.string.server_ip);
 
-        login_information_pref = getSharedPreferences("login_information", Context.MODE_PRIVATE);
-        Email = login_information_pref.getString("email", Email);
+//        login_information_pref = getSharedPreferences("login_information", Context.MODE_PRIVATE);
+//        Email = login_information_pref.getString("email", Email);
 
-        CurrentPwView = findViewById(R.id.current_pw);
-        ChangedPWView = findViewById(R.id.changed_pw);
-        ChangedPW2View = findViewById(R.id.changed2_pw);
+        UserNameView = findViewById(R.id.current_pw);
+        UserPhoneView = findViewById(R.id.changed_pw);
 
         ConfirmButton = findViewById(R.id.pw_check);
         ConfirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                currentPw = CurrentPwView.getText().toString();
-                changedPw = ChangedPWView.getText().toString();
-                changedPw2 = ChangedPW2View.getText().toString();
-
-                if(!changedPw.equals(changedPw2)){
-                    Toast.makeText(getApplication(), "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show();
+                UserName = UserNameView.getText().toString();
+                UserPhone = UserPhoneView.getText().toString();
+                ThreadTask<Object> Find_Email_result = getThreadTask(UserName,UserPhone, "/FindEmail");
+                Find_Email_result.execute(ip);
+                if(Find_Email_result.getResult() == 0){
+                    Toast.makeText(getApplication(), "아이디 찾기를 실패했습니다.", Toast.LENGTH_SHORT).show();
                 }
-                if(changedPw.equals(changedPw2)){
-                    ThreadTask<Object> change_pw_result = getThreadTask(Email,currentPw,changedPw, "/ChangePW");
-                    change_pw_result.execute(ip);
-
-                    if(change_pw_result.getResult() == 0){
-                       /**
-                        * 비밀번호 변경실패
-                        * *
-                        * */
-                        Toast.makeText(getApplication(), "비밀번호 변경에 실패했습니다.", Toast.LENGTH_SHORT).show();
-                    }
-                    else{
-                        Toast.makeText(getApplication(), "비밀번호 변경 성공!", Toast.LENGTH_SHORT).show();
-                    }
+                else{
+                    Toast.makeText(getApplication(),String.format("회원님의 이메일 주소는 %s입니다.",Email), Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
     }
@@ -109,7 +96,7 @@ public class Change_PW extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private ThreadTask<Object> getThreadTask(String email, String currentPw, String changedPw, String Router_name){
+    private ThreadTask<Object> getThreadTask(String UserName, String UserPhone, String Router_name){
 
         return new ThreadTask<Object>() {
             private int response_result;
@@ -128,9 +115,8 @@ public class Change_PW extends AppCompatActivity {
 
                 con = (HttpURLConnection) url.openConnection();
 
-                sendObject.put("email_address", email);
-                sendObject.put("currentPw", currentPw);
-                sendObject.put("changedPw", changedPw);
+                sendObject.put("UserName", UserName);
+                sendObject.put("UserPhone", UserPhone);
 
                 con.setRequestMethod("POST");//POST방식으로 보냄
                 con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
@@ -159,6 +145,7 @@ public class Change_PW extends AppCompatActivity {
                     JSONObject responseJSON = new JSONObject(response);
 
                     this.response_result = (Integer) responseJSON.get("key");
+                    Email = (String) responseJSON.get("email_address");
                     this.error_code = (String) responseJSON.get("err_code");
                 }
             }

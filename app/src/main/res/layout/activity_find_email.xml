@@ -37,7 +37,7 @@
                         android:layout_height="58dp"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:text="비밀번호를 변경해주세요"
+                        android:text="아이디 찾기"
                         android:textColor="@color/login_font"
                         android:textSize="20sp"
                         android:textStyle="bold"
@@ -70,19 +70,19 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="400dp"
-                        >
+                            >
 
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent">
 
                                 <EditText
-                                    android:id="@+id/current_pw"
+                                    android:id="@+id/user_name"
                                     android:layout_width="350dp"
                                     android:layout_height="60dp"
                                     android:layout_marginTop="76dp"
                                     android:background="@drawable/edge3"
-                                    android:hint="현재 비밀번호"
+                                    android:hint="이름"
                                     android:textSize="16sp"
                                     android:padding="10dp"
                                     app:layout_constraintEnd_toEndOf="parent"
@@ -91,32 +91,19 @@
                                     app:layout_constraintTop_toTopOf="parent" />
 
                                 <EditText
-                                    android:id="@+id/changed_pw"
+                                    android:id="@+id/user_phone"
                                     android:layout_width="350dp"
                                     android:layout_height="60dp"
                                     android:layout_marginTop="12dp"
                                     android:background="@drawable/edge3"
-                                    android:hint="변경할 비밀번호"
+                                    android:hint="전화번호"
                                     android:textSize="16sp"
                                     android:padding="10dp"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintHorizontal_bias="0.495"
                                     app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/current_pw" />/
+                                    app:layout_constraintTop_toBottomOf="@+id/user_name" />/
 
-                                <EditText
-                                    android:id="@+id/changed2_pw"
-                                    android:layout_width="350dp"
-                                    android:layout_height="60dp"
-                                    android:layout_marginTop="12dp"
-                                    android:background="@drawable/edge3"
-                                    android:hint="변경할 비밀번호"
-                                    android:textSize="16sp"
-                                    android:padding="10dp"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintHorizontal_bias="0.495"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/changed_pw" />/
 
                                 <com.google.android.material.button.MaterialButton
                                     android:id="@+id/pw_check"
@@ -130,7 +117,7 @@
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintHorizontal_bias="0.495"
                                     app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/changed2_pw"
+                                    app:layout_constraintTop_toBottomOf="@+id/user_phone"
                                     app:layout_constraintVertical_bias="0.0" />
 
                             </androidx.constraintlayout.widget.ConstraintLayout>

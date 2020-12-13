@@ -14,7 +14,63 @@ select wifi_mac_address, board_nickname, phone_number, address from sensor where
 select password from User where email_address='${email_address}'
 update User set password='${password}' where email_address='${email_address}
 
+--user_social에 user 추가--
+insert user_social (email_address, social) values ('test1@naver.com', 'naver');
 
+--login state 변경 state == 1 (in)--
+Update user_social set log_in_state='1' where email_address='test1@naver.com';
+
+--login state 변경 state == 0 (out)--
+Update user_social set log_in_state='0' where email_address='test1@naver.com';
+
+--user_social 회원정보 조회--
+Select phone_number, inst_name from user_social where email_address='test1@naver.com';
+
+-- user_social 회원정보 수정--
+update user_social set phone_number='number1', inst_name =  'inst1' where email_address='test1@naver.com';
+
+-- user_social 회원삭제 --
+Delete from user_social where email_address='test1@naver.com';
+
+--sensor list 조회 (nickname==0000)--
+Select sensor.wifi_mac_address, location, sensor_state
+from (sensor Join connection on sensor.wifi_mac_address=connection.wifi_mac_address)
+where nickname=0000 and connection.email_address='test@naver.com';
+
+--sensor list 조회 (wifimacaddress)--
+Select nickname, location, sensor_state
+from (sensor Join connection on sensor.wifi_mac_address=connection.wifi_mac_address)
+where sensor.wifi_mac_address='mac0' and connection.email_address='test@naver.com';
+
+--sensor list 조회 (sensor state)--
+Select nickname, location, sensor.wifi_mac_address
+from (sensor Join connection on sensor.wifi_mac_address=connection.wifi_mac_address)
+where sensor_state = 'connect’'and connection.email_address='test@naver.com';
+
+--alarm insert--
+insert alarm (wifi_mac_address, alarm_time) values ('mac01', now());
+
+--alarm 조회--
+Select * from alarm where date_format(alarm_time, '%m') ='09'; -- 월별--
+Select * from alarm where date_format(alarm_time, '%m%d') =’0909’; -- 일별--
+
+-alarm 개수 조회--
+select count(*) from alarm where date_format(alarm_time, '%m')='09';--월--
+select count(*) from alarm where date_format(alarm_time, '%m%d')='0909';--일--
+
+--개수 선택 시 view (월)--
+create view view as
+    -> select alarm_time, wifi_mac_address
+    -> from alarm
+    -> where date_format(alarm_time, '%m')='09';
+
+--개수 선택 시 view (일)--
+create view view as
+    -> select alarm_time, wifi_mac_address
+    -> from alarm
+    -> where date_format(alarm_time, '%m%d')='0909';
+    
+    
 'User', 'CREATE TABLE `User` (
 `email_address` varchar(50) CHARACTER SET utf8 NOT NULL,
 `sign_in_status` varchar(1) CHARACTER SET utf8 DEFAULT NULL,

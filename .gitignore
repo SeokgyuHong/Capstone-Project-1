@@ -1,0 +1,8 @@
+Server/secret_info/
+Server/package-lock.json
+Server/fcm_key/
+Server/node_modules/
+Server/practice/
+Server/apitest.js
+Server/test/
+

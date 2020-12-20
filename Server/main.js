@@ -35,7 +35,7 @@ const sensor_list = require('./sensor/sensor_list');
 //센서 온오프
 const sensor_on_off = require('./sensor/sensor_on_off');
 
-//fcm전송
+//fcm 전송
 const send_fcm = require('./sensor/send_fcm');
 //From 센서 To 클라이언트
 

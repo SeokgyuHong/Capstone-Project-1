@@ -37,6 +37,7 @@
 #### CCTV를 사용하지 않고 화장실 낙상사고 인지 가능
 
 <hr/>
+
 ### 데모 영상
 
 https://youtu.be/9q_8vc6kXmk

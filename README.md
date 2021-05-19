@@ -38,6 +38,6 @@
 
 <hr/>
 
-### 데모 영상
+### 시연 영상
 
 https://youtu.be/9q_8vc6kXmk
